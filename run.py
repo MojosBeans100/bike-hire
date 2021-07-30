@@ -29,26 +29,37 @@ def get_latest_response():
     # get date and duration of hire
 
     # get the most recent form response from google sheets
-    last_response = responses_list[-1]    
+    last_response = responses_list[-1]  
 
-    height_1 = last_response[9]
+    bike_types_list = [(last_response[7]),(last_response[9]),(last_response[11]),(last_response[13]),(last_response[15])]
+    bike_heights_list = [(last_response[8]),(last_response[10]),(last_response[12]),(last_response[14]),(last_response[16])]
+    
+    user_bikes_choice = {
+        "bikes_types": bike_types_list,
+        "bikes_heights": bike_heights_list,
+    }
+    
+    print(user_bikes_choice)
 
-    num_of_heights = height_1.count(',')
-    user_heights = []
 
-    if num_of_heights > 0:
+    # height_1 = last_response[9]
 
-        user1_height = height_1[0:13]
-        user2_height = height_1[15:28]
-        user3_height = height_1[30-43]
-        user4_height = height_1[45-58]
-        user5_height = height_1[60-73]
+    # num_of_heights = height_1.count(',')
+    # user_heights = []
 
-        print(user1_height)
-        print(user2_height)
-        print(user3_height)
-        print(user4_height)
-        print(user5_height)
+    # if num_of_heights > 0:
+
+    #     user1_height = height_1[0:13]
+    #     user2_height = height_1[15:28]
+    #     user3_height = height_1[30-43]
+    #     user4_height = height_1[45-58]
+    #     user5_height = height_1[60-73]
+
+    #     print(user1_height)
+    #     print(user2_height)
+    #     print(user3_height)
+    #     print(user4_height)
+    #     print(user5_height)
 
     # print(user1_height.find(','))
 
