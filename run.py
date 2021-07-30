@@ -13,7 +13,21 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('BIKES')
 
-bikes = SHEET.worksheet('bike_list')
+bikes_list = SHEET.worksheet('bike_list')
 
-bikes_1 = bikes.get_all_values()
-print(bikes_1)
+def get_latest_response():
+    """
+    Fetch the latest form response from googlesheets and determine 
+    driving factors for bike selection
+    """
+    # get type and quantity of bikes selected
+    # get heights
+    # get date and duration of hire
+    
+def bikes_available():
+    """
+    Determine if these bikes are actually available
+    in the hire list.  I.e. does the stores have 3 hardtails
+    and 2 full sus carbons in stock (irrespective of hire date)
+    """
+
