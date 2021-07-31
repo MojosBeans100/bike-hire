@@ -16,11 +16,15 @@ SCOPED_CREDS = CREDS.with_scopes(SCOPE)
 GSPREAD_CLIENT = gspread.authorize(SCOPED_CREDS)
 SHEET = GSPREAD_CLIENT.open('BIKES')
 
-bikes_list = SHEET.worksheet('bike_list')
+bikes_list = SHEET.worksheet('bike_list').get_all_values()
 responses_list = SHEET.worksheet('form_responses').get_all_values()
 sort_data = SHEET.worksheet('sort_data').get_all_values()
 calendar = SHEET.worksheet('calendar').get_all_values()
 
+
+# bike_types_list = []
+# bike_heights_list = []
+suitable_bikes = []
 
 def get_available_bikes():
     """
@@ -50,7 +54,7 @@ def get_available_bikes():
 
     # loop through dates requested, and list of bikes against dates already
     # booked in g.sheets:- if unavailable on dates requested,
-    # append to bikes_unavailable list
+    # append bike index to bikes_unavailable list
     for dates in hire_dates_requested:
         for i in range(len(calendar)):
             if dates in calendar[i]:
@@ -63,10 +67,8 @@ def get_available_bikes():
     # print(calendar_first_row)
 
 
-    
-   
-
 get_available_bikes()
+
 
 def get_latest_response():
     """
@@ -77,42 +79,51 @@ def get_latest_response():
     # get heights
     # get date and duration of hire
 
+    global bike_types_list
+    global bike_heights_list
+
     # get the most recent form response from google sheets
     last_response = responses_list[-1]  
 
     bike_types_list = [(last_response[7]),(last_response[9]),(last_response[11]),(last_response[13]),(last_response[15])]
     bike_heights_list = [(last_response[8]),(last_response[10]),(last_response[12]),(last_response[14]),(last_response[16])]
+
+    print(bike_types_list)
+    print(bike_heights_list)
+
+get_latest_response()
+
+
+def match_suitable_bikes():
+    """
+    Use submitted form info to find selection of appropriate bikes
+    """
     
-    user_bikes_choice = {
-        "bikes_types": bike_types_list,
-        "bikes_heights": bike_heights_list,
-    }
-    
-    print(user_bikes_choice)
+    for bike_type in bike_types_list:
+       
+        for i in range(len(bikes_list)):
+            if bike_type == bikes_list[i][4]:
+                suitable_bikes.append(bikes_list[i][0])
+
+        
+
+    print(suitable_bikes)
+
+match_suitable_bikes()
 
 
-    # height_1 = last_response[9]
 
-    # num_of_heights = height_1.count(',')
-    # user_heights = []
 
-    # if num_of_heights > 0:
 
-    #     user1_height = height_1[0:13]
-    #     user2_height = height_1[15:28]
-    #     user3_height = height_1[30-43]
-    #     user4_height = height_1[45-58]
-    #     user5_height = height_1[60-73]
 
-    #     print(user1_height)
-    #     print(user2_height)
-    #     print(user3_height)
-    #     print(user4_height)
-    #     print(user5_height)
 
-    # print(user1_height.find(','))
 
-    # print(user1_height)    
+
+
+
+
+
+
 
 
 
@@ -165,7 +176,7 @@ def get_latest_response():
 #     # find closest match ie is a Medium bike available instead of a Large
 
 
-
+# UNUSED CODE
 
 
 #  sdate_day = int(start_date[3:5])
@@ -185,3 +196,28 @@ def get_latest_response():
 #     # print(sdate_year)
 
     # print(end_date)
+
+
+
+    # height_1 = last_response[9]
+
+    # num_of_heights = height_1.count(',')
+    # user_heights = []
+
+    # if num_of_heights > 0:
+
+    #     user1_height = height_1[0:13]
+    #     user2_height = height_1[15:28]
+    #     user3_height = height_1[30-43]
+    #     user4_height = height_1[45-58]
+    #     user5_height = height_1[60-73]
+
+    #     print(user1_height)
+    #     print(user2_height)
+    #     print(user3_height)
+    #     print(user4_height)
+    #     print(user5_height)
+
+    # print(user1_height.find(','))
+
+    # print(user1_height)    
