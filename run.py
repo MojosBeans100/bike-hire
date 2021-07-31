@@ -35,10 +35,18 @@ def get_available_bikes():
     start_date = datetime.strptime(users_start_date, "%Y-%m-%d")
 
     # calculate end date based on the hire duration
-    end_date = start_date + timedelta(days=int(responses_list[-1][6]) - 1) 
+    delta = timedelta(days=int(responses_list[-1][6]) - 1)
+    end_date = start_date + delta
 
-    print(start_date)
-    print(end_date)
+    # list all dates in between
+    hire_dates_requested = []
+
+    while start_date <= end_date:
+        hire_dates_requested.append(start_date.strftime("%Y-%m-%d"))
+        start_date += delta
+
+    print(hire_dates_requested)
+    
    
 
 get_available_bikes()
