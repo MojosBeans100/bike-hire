@@ -19,6 +19,7 @@ SHEET = GSPREAD_CLIENT.open('BIKES')
 bikes_list = SHEET.worksheet('bike_list')
 responses_list = SHEET.worksheet('form_responses').get_all_values()
 sort_data = SHEET.worksheet('sort_data').get_all_values()
+calendar = SHEET.worksheet('calendar').get_all_values()
 
 
 def get_available_bikes():
@@ -40,12 +41,28 @@ def get_available_bikes():
 
     # list all dates in between
     hire_dates_requested = []
-
     while start_date <= end_date:
         hire_dates_requested.append(start_date.strftime("%Y-%m-%d"))
         start_date += delta
 
+    # get bikes available on that/those dates
+    bikes_unavailable = []
+
+    # loop through dates requested, and list of bikes against dates already
+    # booked in g.sheets:- if unavailable on dates requested,
+    # append to bikes_unavailable list
+    for dates in hire_dates_requested:
+        for i in range(len(calendar)):
+            if dates in calendar[i]:
+                bikes_unavailable.append(calendar[i][0])
+
     print(hire_dates_requested)
+    print(bikes_unavailable)           
+
+    # calendar_first_row = calendar[2]
+    # print(calendar_first_row)
+
+
     
    
 
