@@ -85,10 +85,15 @@ def get_latest_response():
     # get the most recent form response from google sheets
     last_response = responses_list[-1]  
 
-    bike_types_list = [(last_response[7]),(last_response[9]),(last_response[11]),(last_response[13]),(last_response[15])]
-    bike_heights_list = [(last_response[8]),(last_response[10]),(last_response[12]),(last_response[14]),(last_response[16])]
+    bike_types_list_orig = [(last_response[7]),(last_response[9]),(last_response[11]),(last_response[13]),(last_response[15])]
+    bike_heights_list_orig = [(last_response[8]),(last_response[10]),(last_response[12]),(last_response[14]),(last_response[16])]
+
+    # max bikes hired = 5, but remove empty values from list 
+    bike_types_list = list(filter(None, bike_types_list_orig))
+    bike_heights_list = list(filter(None, bike_heights_list_orig))
 
     print(bike_types_list)
+    print(len(bike_types_list))
     print(bike_heights_list)
 
 get_latest_response()
@@ -98,16 +103,17 @@ def match_suitable_bikes():
     """
     Use submitted form info to find selection of appropriate bikes
     """
-    
+
     for bike_type in bike_types_list:
-       
+
+
         for i in range(len(bikes_list)):
             if bike_type == bikes_list[i][4]:
                 suitable_bikes.append(bikes_list[i][0])
 
         
 
-    print(suitable_bikes)
+    # print(suitable_bikes)
 
 match_suitable_bikes()
 
