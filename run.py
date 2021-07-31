@@ -1,7 +1,9 @@
 
 import gspread
 from google.oauth2.service_account import Credentials
-from datetime import datetime, timedelta
+from datetime import datetime
+from datetime import timedelta
+from datetime import date
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -18,6 +20,28 @@ bikes_list = SHEET.worksheet('bike_list')
 responses_list = SHEET.worksheet('form_responses').get_all_values()
 sort_data = SHEET.worksheet('sort_data').get_all_values()
 
+
+def get_available_bikes():
+    """
+    Fetch list of all bikes available on date(s) requested
+    """
+    # get start date, end date, dates in between
+    # format the date into usable format to determine end date
+
+    # get users selected date
+    users_start_date = responses_list[-1][5]
+
+    # put date in readable format
+    start_date = datetime.strptime(users_start_date, "%Y-%m-%d")
+
+    # calculate end date based on the hire duration
+    end_date = start_date + timedelta(days=int(responses_list[-1][6]) - 1) 
+
+    print(start_date)
+    print(end_date)
+   
+
+get_available_bikes()
 
 def get_latest_response():
     """
@@ -65,7 +89,6 @@ def get_latest_response():
 
     # print(user1_height)    
 
-get_latest_response()
 
 
 
@@ -91,16 +114,7 @@ get_latest_response()
 #     # use list from bikes_available() to check dates
 #     # and output selected bikes
 
-# format the date into usable format to determine end date
-# last_response = sort_data[-1]
-    # start_date_day = int(last_response[2][:2])
-    # start_date_month = int(last_response[2][3:-3])
-    # start_date_year = int(last_response[2][6:])
-    # hire_length = int(last_response[3])
 
-    # start_date = datetime(start_date_year,start_date_month,start_date_day)
-
-    # end_date = start_date + timedelta(hire_length-1)
 
 
 # def confirm_hire():
@@ -126,3 +140,23 @@ get_latest_response()
 #     # find closest match ie is a Medium bike available instead of a Large
 
 
+
+
+
+#  sdate_day = int(start_date[3:5])
+#     sdate_month = int(start_date[:2])
+#     sdate_year = int(start_date[6:])
+
+#     start_date2 = date(sdate_year, sdate_month, sdate_day)
+
+#     # days_hired_for = int(responses_list[-1][6])
+
+#     # end_date = start_date + days_hired_for
+
+#     print(start_date2)
+
+#     # print(sdate_day)
+#     # print(sdate_month)
+#     # print(sdate_year)
+
+    # print(end_date)
