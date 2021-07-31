@@ -92,9 +92,21 @@ def get_latest_response():
     bike_types_list = list(filter(None, bike_types_list_orig))
     bike_heights_list = list(filter(None, bike_heights_list_orig))
 
-    print(bike_types_list)
-    print(len(bike_types_list))
-    print(bike_heights_list)
+    # create dictionaries to store info about each bike requested
+    global list_of_bikes
+    list_of_bikes = []
+
+    for j in range(len(bike_types_list)):
+        d = {
+            'bike_type': bike_types_list[j],
+            'user_height': bike_heights_list[j],
+            'possible_matches': [],
+            'num_bikes_available': "",
+            'price_per_day': "",
+        }
+        list_of_bikes.append(d)
+
+    return list_of_bikes
 
 get_latest_response()
 
@@ -104,9 +116,9 @@ def match_suitable_bikes():
     Use submitted form info to find selection of appropriate bikes
     """
 
+    # loop through bikes requested, and compare to bikes available in hire fleet
+    # output the bike index of bikes which match type of those requested
     for bike_type in bike_types_list:
-
-
         for i in range(len(bikes_list)):
             if bike_type == bikes_list[i][4]:
                 suitable_bikes.append(bikes_list[i][0])
