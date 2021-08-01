@@ -22,6 +22,15 @@ sort_data = SHEET.worksheet('sort_data').get_all_values()
 calendar = SHEET.worksheet('calendar').get_all_values()
 
 
+# hello = {
+#     'you' : 'no',
+#     'yes' : 'naw',
+#     'hi'  : [1, 3, 5, 10],
+# }
+
+# print(hello['hi'][0])
+
+
 # bike_types_list = []
 # bike_heights_list = []
 suitable_bikes = []
@@ -61,7 +70,7 @@ def get_available_bikes():
                 bikes_unavailable.append(calendar[i][0])
 
     print(hire_dates_requested)
-    print(bikes_unavailable)           
+    # print(bikes_unavailable)           
 
     # calendar_first_row = calendar[2]
     # print(calendar_first_row)
@@ -106,10 +115,10 @@ def get_latest_response():
         }
         list_of_bikes.append(d)
 
-    return list_of_bikes
-
+   
 get_latest_response()
 
+# print(list_of_bikes[1]['possible_matches'])
 
 def match_suitable_bikes():
     """
@@ -117,17 +126,20 @@ def match_suitable_bikes():
     """
 
     # loop through bikes requested, and compare to bikes available in hire fleet
-    # output the bike index of bikes which match type of those requested
-    for bike_type in bike_types_list:
-        for i in range(len(bikes_list)):
-            if bike_type == bikes_list[i][4]:
-                suitable_bikes.append(bikes_list[i][0])
-
+    # output the bike index of bikes which match type of those requested to the bike dictionaries
+    
+    for j in range(len(list_of_bikes)):
         
-
-    # print(suitable_bikes)
-
+        for i in range(len(bikes_list)):
+            if list_of_bikes[j]['bike_type'] == bikes_list[i][4]:
+                list_of_bikes[j]['possible_matches'].append(bikes_list[i][0])
+                list_of_bikes[j]['num_bikes_available'] = (len(list_of_bikes[j]['possible_matches']))
+        
+    print(list_of_bikes) 
+ 
 match_suitable_bikes()
+
+
 
 
 
@@ -239,3 +251,10 @@ match_suitable_bikes()
     # print(user1_height.find(','))
 
     # print(user1_height)    
+
+
+# for bike_type in list_of_bikes:
+#         for i in range(len(bikes_list)):
+#             if bike_type == bikes_list[i][4]:
+#                 suitable_bikes.append(bikes_list[i][0])
+#                 # list_of_bikes[bike_type]['possible_matches'] = (bikes_list[i][0])
