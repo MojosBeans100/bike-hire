@@ -47,6 +47,7 @@ def get_available_bikes():
         start_date += delta
 
     # get bikes available on that/those dates
+    global bikes_unavailable
     bikes_unavailable = []
 
     # loop through dates requested, and list of bikes against dates already
@@ -59,7 +60,7 @@ def get_available_bikes():
 
 
 get_available_bikes()
-
+print(f"Unavailable bikes: {bikes_unavailable}")
 
 def get_latest_response():
     """
@@ -122,28 +123,27 @@ def match_size():
 
 match_size()
 
-print(bikes_dictionary)
 
-# def match_suitable_bikes():
-#     """
-#     Use submitted form info to find selection of appropriate bikes
-#     """
+def match_suitable_bikes():
+    """
+    Use submitted form info to find selection of appropriate bikes
+    """
 
-#     # loop through bikes requested, and compare to bikes available in hire fleet
-#     # output the bike index of bikes which match type of those requested to the bike dictionaries
+    # loop through bikes requested, and compare to bikes available in hire fleet
+    # output the bike index of bikes which match type of those requested to the bike dictionaries
     
-#     for j in range(len(bikes_dictionary)):
+    for j in range(len(bikes_dictionary)):
         
-#         for i in range(len(bikes_list)):
-#             if bikes_dictionary[j]['bike_type'] == bikes_list[i][4]:
-#                 bikes_dictionary[j]['possible_matches'].append(bikes_list[i][0])
-#                 bikes_dictionary[j]['num_bikes_available'] = (len(bikes_dictionary[j]['possible_matches']))
+        for i in range(len(bikes_list)):
+            if bikes_dictionary[j]['bike_type'] == bikes_list[i][4] and bikes_dictionary[j]['bike_size'] == bikes_list[i][3]:
+                bikes_dictionary[j]['possible_matches'].append(bikes_list[i][0])
+                bikes_dictionary[j]['num_bikes_available'] = (len(bikes_dictionary[j]['possible_matches']))
         
-#     print(bikes_dictionary) 
+    print(bikes_dictionary) 
  
-# match_suitable_bikes()
+match_suitable_bikes()
 
-
+#and bikes_dictionary[j]['bike_size'] == bikes_list[i][3]
 
 
 
