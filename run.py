@@ -1,4 +1,3 @@
-
 import gspread
 from google.oauth2.service_account import Credentials
 from datetime import datetime
@@ -181,12 +180,39 @@ def remove_unavailable_bikes():
                     remove_bike = bikes_unavailable[i]
                     print(remove_bike)
                     bikes_dictionary[j]['possible_matches'].remove(remove_bike)
+                    # update num_bikes_available list in dictionaries
+                    bikes_dictionary[j]['num_bikes_available'] = (len(bikes_dictionary[j]['possible_matches']))
 
 remove_unavailable_bikes()
 
-pprint(bikes_dictionary) 
+#pprint(bikes_dictionary) 
 
+def choose_bikes():
+    """
+    If more than one match, pick first one
+    """
 
+    # loop through bike dictionary
+    for j in range(len(bikes_dictionary)):
+             
+        # if there is more than 1 possible match, pick the first one and remove the rest
+        if bikes_dictionary[j]['num_bikes_available'] > 1:
+            first_bike = (bikes_dictionary[j]['possible_matches'][0])
+            bikes_dictionary[j]['possible_matches'] = first_bike
+        else:
+            bikes_dictionary[j]['possible_matches'] = bikes_dictionary[j]['possible_matches'][0]
+
+        # rename the key to chosen bike instead of possible bikes, now it has been narrowed down to 1 choice      
+        bikes_dictionary[j]['chosen_bike'] = bikes_dictionary[j]['possible_matches']
+        del bikes_dictionary[j]['possible_matches'] 
+
+choose_bikes()
+
+pprint(bikes_dictionary)
+# def book_bikes_to_calendar():
+#     # look for bike index
+#     # look for last value in that row
+#     # for all dates provided, append those dates to the row
 
 
 
