@@ -20,7 +20,7 @@ bikes_list = SHEET.worksheet('bike_list').get_all_values()
 responses_list = SHEET.worksheet('form_responses').get_all_values()
 sort_data = SHEET.worksheet('sort_data').get_all_values()
 calendar = SHEET.worksheet('calendar').get_all_values()
-size_guide = SHEET.worksheet('size_guide').get_all_values()
+gs_size_guide = SHEET.worksheet('size_guide').get_all_values()
 
 
 def get_available_bikes():
@@ -57,12 +57,6 @@ def get_available_bikes():
             if dates in calendar[i]:
                 bikes_unavailable.append(calendar[i][0])
 
-    print(hire_dates_requested)
-    # print(bikes_unavailable)           
-
-    # calendar_first_row = calendar[2]
-    # print(calendar_first_row)
-
 
 get_available_bikes()
 
@@ -76,38 +70,38 @@ def get_latest_response():
     # get heights
     # get date and duration of hire
 
-    global bike_types_list
-    global bike_heights_list
+    global types_list
+    global heights_list
 
     # get the most recent form response from google sheets
     last_response = responses_list[-1]  
 
-    bike_types_list_orig = [(last_response[7]),(last_response[9]),(last_response[11]),(last_response[13]),(last_response[15])]
-    bike_heights_list_orig = [(last_response[8]),(last_response[10]),(last_response[12]),(last_response[14]),(last_response[16])]
+    types_list_orig = [(last_response[7]),(last_response[9]),(last_response[11]),(last_response[13]),(last_response[15])]
+    heights_list_orig = [(last_response[8]),(last_response[10]),(last_response[12]),(last_response[14]),(last_response[16])]
 
     # max bikes hired = 5, but remove empty values from list 
-    bike_types_list = list(filter(None, bike_types_list_orig))
-    bike_heights_list = list(filter(None, bike_heights_list_orig))
+    types_list = list(filter(None, types_list_orig))
+    heights_list = list(filter(None, heights_list_orig))
 
     # create dictionaries to store info about each bike requested
-    global list_of_bikes
-    list_of_bikes = []
+    global bikes_dictionary
+    bikes_dictionary = []
 
-    for j in range(len(bike_types_list)):
+    for j in range(len(types_list)):
         d = {
-            'bike_type': bike_types_list[j],
-            'user_height': bike_heights_list[j],
+            'bike_type': types_list[j],
+            'user_height': heights_list[j],
             'bike_size': "",
             'possible_matches': [],
             'num_bikes_available': "",
             'price_per_day': "",
         }
-        list_of_bikes.append(d)
+        bikes_dictionary.append(d)
 
    
 get_latest_response()
 
-# print(list_of_bikes)
+# print(bikes_dictionary)
 
 def match_size():
     """
@@ -115,7 +109,7 @@ def match_size():
     """
 
     # iterate through list of bikes dictionaries (max 5)
-    for i in range(len(list_of_bikes)):
+    for i in range(len(bikes_dictionary)):
 
         # iterate through available bike sizes in size_guide google sheet
         for j in range(3, 9):  
@@ -123,12 +117,12 @@ def match_size():
             # if the bike size in size_guide is the same as the user height, index the relevant bike size
             # and append to the dictionary   
                
-            if (size_guide[j][4]) == list_of_bikes[i]['user_height']:
-                list_of_bikes[i]['bike_size'] = size_guide[j][8]
+            if (gs_size_guide[j][4]) == bikes_dictionary[i]['user_height']:
+                bikes_dictionary[i]['bike_size'] = gs_size_guide[j][8]
 
 match_size()
 
-print(list_of_bikes)
+print(bikes_dictionary)
 
 # def match_suitable_bikes():
 #     """
@@ -138,14 +132,14 @@ print(list_of_bikes)
 #     # loop through bikes requested, and compare to bikes available in hire fleet
 #     # output the bike index of bikes which match type of those requested to the bike dictionaries
     
-#     for j in range(len(list_of_bikes)):
+#     for j in range(len(bikes_dictionary)):
         
 #         for i in range(len(bikes_list)):
-#             if list_of_bikes[j]['bike_type'] == bikes_list[i][4]:
-#                 list_of_bikes[j]['possible_matches'].append(bikes_list[i][0])
-#                 list_of_bikes[j]['num_bikes_available'] = (len(list_of_bikes[j]['possible_matches']))
+#             if bikes_dictionary[j]['bike_type'] == bikes_list[i][4]:
+#                 bikes_dictionary[j]['possible_matches'].append(bikes_list[i][0])
+#                 bikes_dictionary[j]['num_bikes_available'] = (len(bikes_dictionary[j]['possible_matches']))
         
-#     print(list_of_bikes) 
+#     print(bikes_dictionary) 
  
 # match_suitable_bikes()
 
@@ -263,8 +257,8 @@ print(list_of_bikes)
     # print(user1_height)    
 
 
-# for bike_type in list_of_bikes:
+# for bike_type in bikes_dictionary:
 #         for i in range(len(bikes_list)):
 #             if bike_type == bikes_list[i][4]:
 #                 suitable_bikes.append(bikes_list[i][0])
-#                 # list_of_bikes[bike_type]['possible_matches'] = (bikes_list[i][0])
+#                 # bikes_dictionary[bike_type]['possible_matches'] = (bikes_list[i][0])
