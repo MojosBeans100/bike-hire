@@ -42,6 +42,7 @@ def get_available_bikes():
     end_date = start_date + delta
 
     # list all dates in between
+    global hire_dates_requested
     hire_dates_requested = []
     while start_date <= end_date:
         hire_dates_requested.append(start_date.strftime("%Y-%m-%d"))
@@ -91,6 +92,7 @@ def get_latest_response():
 
     for j in range(len(types_list)):
         d = {
+            'dates_of_hire': hire_dates_requested,
             'bike_type': types_list[j],
             'user_height': heights_list[j],
             'bike_size': "",
@@ -149,7 +151,6 @@ def match_suitable_bikes():
 
     # loop through bikes requested, and compare to bikes available in hire fleet
     # output the bike index of bikes which match type of those requested to the bike dictionaries
-    
     for j in range(len(bikes_dictionary)):
         
         for i in range(len(bikes_list)):
@@ -158,19 +159,32 @@ def match_suitable_bikes():
                 bikes_dictionary[j]['num_bikes_available'] = (len(bikes_dictionary[j]['possible_matches']))
                 
         
-    pprint(bikes_dictionary) 
+    
  
 match_suitable_bikes()
 
 #and bikes_dictionary[j]['bike_size'] == bikes_list[i][3]
 
+def remove_unavailable_bikes():
+    """
+    Unavailable bikes on dates requested have been defined in get_available_bikes.
+    Look for these bike indexes in bikes dictionaries and if found, remove them
+    """
 
+    # loop through bikes dictionaries
+    for j in range(len(bikes_dictionary)):
+        # loop through the unavailable bikes lists
+        for i in range(len(bikes_unavailable)):
+                # if any of the bike indexes in the unavailable bikes list are found in the bikes dictionaries
+                # remove these bike indexes
+                if bikes_unavailable[i] in bikes_dictionary[j]['possible_matches']:
+                    remove_bike = bikes_unavailable[i]
+                    print(remove_bike)
+                    bikes_dictionary[j]['possible_matches'].remove(remove_bike)
 
+remove_unavailable_bikes()
 
-
-
-
-
+pprint(bikes_dictionary) 
 
 
 
