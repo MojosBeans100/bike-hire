@@ -20,20 +20,8 @@ bikes_list = SHEET.worksheet('bike_list').get_all_values()
 responses_list = SHEET.worksheet('form_responses').get_all_values()
 sort_data = SHEET.worksheet('sort_data').get_all_values()
 calendar = SHEET.worksheet('calendar').get_all_values()
+size_guide = SHEET.worksheet('size_guide').get_all_values()
 
-
-# hello = {
-#     'you' : 'no',
-#     'yes' : 'naw',
-#     'hi'  : [1, 3, 5, 10],
-# }
-
-# print(hello['hi'][0])
-
-
-# bike_types_list = []
-# bike_heights_list = []
-suitable_bikes = []
 
 def get_available_bikes():
     """
@@ -109,6 +97,7 @@ def get_latest_response():
         d = {
             'bike_type': bike_types_list[j],
             'user_height': bike_heights_list[j],
+            'bike_size': "",
             'possible_matches': [],
             'num_bikes_available': "",
             'price_per_day': "",
@@ -118,26 +107,47 @@ def get_latest_response():
    
 get_latest_response()
 
-# print(list_of_bikes[1]['possible_matches'])
+# print(list_of_bikes)
 
-def match_suitable_bikes():
+def match_size():
     """
-    Use submitted form info to find selection of appropriate bikes
+    Match the heights specified in user form to the correct bike size
     """
 
-    # loop through bikes requested, and compare to bikes available in hire fleet
-    # output the bike index of bikes which match type of those requested to the bike dictionaries
+    # iterate through list of bikes dictionaries (max 5)
+    for i in range(len(list_of_bikes)):
+
+        # iterate through available bike sizes in size_guide google sheet
+        for j in range(3, 9):  
+
+            # if the bike size in size_guide is the same as the user height, index the relevant bike size
+            # and append to the dictionary   
+               
+            if (size_guide[j][4]) == list_of_bikes[i]['user_height']:
+                list_of_bikes[i]['bike_size'] = size_guide[j][8]
+
+match_size()
+
+print(list_of_bikes)
+
+# def match_suitable_bikes():
+#     """
+#     Use submitted form info to find selection of appropriate bikes
+#     """
+
+#     # loop through bikes requested, and compare to bikes available in hire fleet
+#     # output the bike index of bikes which match type of those requested to the bike dictionaries
     
-    for j in range(len(list_of_bikes)):
+#     for j in range(len(list_of_bikes)):
         
-        for i in range(len(bikes_list)):
-            if list_of_bikes[j]['bike_type'] == bikes_list[i][4]:
-                list_of_bikes[j]['possible_matches'].append(bikes_list[i][0])
-                list_of_bikes[j]['num_bikes_available'] = (len(list_of_bikes[j]['possible_matches']))
+#         for i in range(len(bikes_list)):
+#             if list_of_bikes[j]['bike_type'] == bikes_list[i][4]:
+#                 list_of_bikes[j]['possible_matches'].append(bikes_list[i][0])
+#                 list_of_bikes[j]['num_bikes_available'] = (len(list_of_bikes[j]['possible_matches']))
         
-    print(list_of_bikes) 
+#     print(list_of_bikes) 
  
-match_suitable_bikes()
+# match_suitable_bikes()
 
 
 
