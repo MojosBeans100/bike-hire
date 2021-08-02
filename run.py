@@ -4,6 +4,7 @@ from google.oauth2.service_account import Credentials
 from datetime import datetime
 from datetime import timedelta
 from datetime import date
+from pprint import pprint
 
 SCOPE = [
     "https://www.googleapis.com/auth/spreadsheets",
@@ -117,11 +118,28 @@ def match_size():
 
             # if the bike size in size_guide is the same as the user height, index the relevant bike size
             # and append to the dictionary   
-               
             if (gs_size_guide[j][4]) == bikes_dictionary[i]['user_height']:
                 bikes_dictionary[i]['bike_size'] = gs_size_guide[j][8]
 
 match_size()
+
+def match_price():
+    """
+    Fetch the price per day based on the bike type selected and append to dictionary
+    """
+
+    # iterate through list of bikes dictionaries (max 5)
+    for i in range(len(bikes_dictionary)):
+
+        # iterate through gs_bikes_list
+        for j in range(len(bikes_list)):  
+
+            # if the bike type in the gs_bikes_list is same as that of the dictionary, index the relevant price
+            # and append to the dictionary   
+            if (bikes_list[j][4]) == bikes_dictionary[i]['bike_type']:
+                bikes_dictionary[i]['price_per_day'] = bikes_list[j][5]
+
+match_price()
 
 
 def match_suitable_bikes():
@@ -138,8 +156,9 @@ def match_suitable_bikes():
             if bikes_dictionary[j]['bike_type'] == bikes_list[i][4] and bikes_dictionary[j]['bike_size'] == bikes_list[i][3]:
                 bikes_dictionary[j]['possible_matches'].append(bikes_list[i][0])
                 bikes_dictionary[j]['num_bikes_available'] = (len(bikes_dictionary[j]['possible_matches']))
+                
         
-    print(bikes_dictionary) 
+    pprint(bikes_dictionary) 
  
 match_suitable_bikes()
 
