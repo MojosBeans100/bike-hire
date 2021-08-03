@@ -23,46 +23,6 @@ calendar = SHEET.worksheet('calendar').get_all_values()
 gs_size_guide = SHEET.worksheet('size_guide').get_all_values()
 
 
-def get_available_bikes():
-    """
-    Fetch list of all bikes available on date(s) requested
-    """
-    # get start date, end date, dates in between
-    # format the date into usable format to determine end date
-
-    # get users selected date
-    users_start_date = responses_list[-1][5]
-
-    # put date in readable format
-    start_date = datetime.strptime(users_start_date, "%Y-%m-%d")
-
-    # calculate end date based on the hire duration
-    delta = timedelta(days=int(responses_list[-1][6]) - 1)
-    end_date = start_date + delta
-
-    # list all dates in between
-    global hire_dates_requested
-    hire_dates_requested = []
-    while start_date <= end_date:
-        hire_dates_requested.append(start_date.strftime("%Y-%m-%d"))
-        start_date += delta
-
-    # get bikes available on that/those dates
-    global bikes_unavailable
-    bikes_unavailable = []
-
-    # loop through dates requested, and list of bikes against dates already
-    # booked in g.sheets:- if unavailable on dates requested,
-    # append bike index to bikes_unavailable list
-    for dates in hire_dates_requested:
-        for i in range(len(calendar)):
-            if dates in calendar[i]:
-                bikes_unavailable.append(calendar[i][0])
-
-
-get_available_bikes()
-print(f"Unavailable bikes: {bikes_unavailable}")
-
 def get_latest_response():
     """
     Fetch the latest form response from googlesheets and determine 
@@ -91,7 +51,7 @@ def get_latest_response():
 
     for j in range(len(types_list)):
         d = {
-            'dates_of_hire': hire_dates_requested,
+            #'dates_of_hire': hire_dates_requested,
             'bike_type': types_list[j],
             'user_height': heights_list[j],
             'bike_size': "",
@@ -104,7 +64,6 @@ def get_latest_response():
    
 get_latest_response()
 
-# print(bikes_dictionary)
 
 def match_size():
     """
@@ -122,7 +81,43 @@ def match_size():
             if (gs_size_guide[j][4]) == bikes_dictionary[i]['user_height']:
                 bikes_dictionary[i]['bike_size'] = gs_size_guide[j][8]
 
+
 match_size()
+
+# pprint(bikes_dictionary)
+
+#print(len((bikes_dictionary))-1)
+
+# def same_bike():
+#     """
+#     This function determines if there are two or more of the same bike requested
+#     Based on bike type and size
+#     """
+#     global same_bikes
+#     same_bikes = {
+#         'same_1': [],
+#         'same_2': [],
+#         'same_3': [],
+#     }
+
+#     # loop through bike dictionaries
+#     for i in range(len(bikes_dictionary)):
+
+#         # i = j, we are comparing dictionaries against each other
+#         for j in range(0, len((bikes_dictionary))-1):
+
+#             # ignore when i and j are the same number as we are comparing the same dictionary here
+#             if i == j:
+#                 continue
+
+#             # when i and j are not the same, compare dictionaries and if the same, return
+#             else:
+#                 print(f"i = {i}")
+#                 print(f"j = {j}")
+#                 if bikes_dictionary[i] == bikes_dictionary[j]:
+#                     print(f"{i} and {j} are the same")
+
+# same_bike()
 
 def match_price():
     """
@@ -139,6 +134,7 @@ def match_price():
             # and append to the dictionary   
             if (bikes_list[j][4]) == bikes_dictionary[i]['bike_type']:
                 bikes_dictionary[i]['price_per_day'] = bikes_list[j][5]
+
 
 match_price()
 
@@ -157,58 +153,148 @@ def match_suitable_bikes():
                 bikes_dictionary[j]['possible_matches'].append(bikes_list[i][0])
                 bikes_dictionary[j]['num_bikes_available'] = (len(bikes_dictionary[j]['possible_matches']))
                 
-        
-    
- 
+          
 match_suitable_bikes()
 
-#and bikes_dictionary[j]['bike_size'] == bikes_list[i][3]
-
-def remove_unavailable_bikes():
+def check_availability():
     """
-    Unavailable bikes on dates requested have been defined in get_available_bikes.
-    Look for these bike indexes in bikes dictionaries and if found, remove them
+    Cross reference bike dictionaries with dates from calendar to check availability
     """
+    # get users selected date
+    users_start_date = responses_list[-1][5]
 
-    # loop through bikes dictionaries
+    # put date in readable format
+    start_date = datetime.strptime(users_start_date, "%Y-%m-%d")
+
+    # calculate end date based on the hire duration
+    delta = timedelta(days=int(responses_list[-1][6]) - 1)
+    end_date = start_date + delta
+
+    # list all dates in between
+    global hire_dates_requested
+    hire_dates_requested = []
+    while start_date <= end_date:
+        hire_dates_requested.append(start_date.strftime("%Y-%m-%d"))
+        start_date += delta
+
+    pprint(bikes_dictionary)
+
     for j in range(len(bikes_dictionary)):
-        # loop through the unavailable bikes lists
-        for i in range(len(bikes_unavailable)):
-                # if any of the bike indexes in the unavailable bikes list are found in the bikes dictionaries
-                # remove these bike indexes
-                if bikes_unavailable[i] in bikes_dictionary[j]['possible_matches']:
-                    remove_bike = bikes_unavailable[i]
-                    print(remove_bike)
-                    bikes_dictionary[j]['possible_matches'].remove(remove_bike)
-                    # update num_bikes_available list in dictionaries
-                    bikes_dictionary[j]['num_bikes_available'] = (len(bikes_dictionary[j]['possible_matches']))
+        #print(f"j={j}")
+        for i in range(len(calendar)):
+            #print(f"i={i}")
+            if calendar[i][0] in bikes_dictionary[j]['possible_matches']:
+                for k in range(len(hire_dates_requested)):
+                    if hire_dates_requested[k] in calendar[i]:
+                        unav = hire_dates_requested[k]
+                        
+                        print(f"Unavailable dates {unav} {i}")
+                        print(calendar[i][0])
+                        # print(unav)
+                        (bikes_dictionary[j]['possible_matches']).remove(calendar[i][0])
+                        #print(bikes_dictionary[j]['possible_matches'])
 
-remove_unavailable_bikes()
+    
 
-#pprint(bikes_dictionary) 
+check_availability()
 
-def choose_bikes():
-    """
-    If more than one match, pick first one
-    """
-
-    # loop through bike dictionary
-    for j in range(len(bikes_dictionary)):
-             
-        # if there is more than 1 possible match, pick the first one and remove the rest
-        if bikes_dictionary[j]['num_bikes_available'] > 1:
-            first_bike = (bikes_dictionary[j]['possible_matches'][0])
-            bikes_dictionary[j]['possible_matches'] = first_bike
-        else:
-            bikes_dictionary[j]['possible_matches'] = bikes_dictionary[j]['possible_matches'][0]
-
-        # rename the key to chosen bike instead of possible bikes, now it has been narrowed down to 1 choice      
-        bikes_dictionary[j]['chosen_bike'] = bikes_dictionary[j]['possible_matches']
-        del bikes_dictionary[j]['possible_matches'] 
-
-choose_bikes()
 
 pprint(bikes_dictionary)
+
+# def get_available_bikes():
+#     """
+#     Fetch list of all bikes available on date(s) requested
+#     """
+#     # get start date, end date, dates in between
+#     # format the date into usable format to determine end date
+
+#     # get users selected date
+#     users_start_date = responses_list[-1][5]
+
+#     # put date in readable format
+#     start_date = datetime.strptime(users_start_date, "%Y-%m-%d")
+
+#     # calculate end date based on the hire duration
+#     delta = timedelta(days=int(responses_list[-1][6]) - 1)
+#     end_date = start_date + delta
+
+#     # list all dates in between
+#     global hire_dates_requested
+#     hire_dates_requested = []
+#     while start_date <= end_date:
+#         hire_dates_requested.append(start_date.strftime("%Y-%m-%d"))
+#         start_date += delta
+
+#     # get bikes available on that/those dates
+#     global bikes_unavailable
+#     bikes_unavailable = []
+
+#     # loop through dates requested, and list of bikes against dates already
+#     # booked in g.sheets:- if unavailable on dates requested,
+#     # append bike index to bikes_unavailable list
+#     for dates in hire_dates_requested:
+#         for i in range(len(calendar)):
+#             if dates in calendar[i]:
+#                 bikes_unavailable.append(calendar[i][0])
+
+
+# get_available_bikes()
+# print(f"Unavailable bikes: {bikes_unavailable}")
+
+
+
+
+
+
+# def remove_unavailable_bikes():
+#     """
+#     Unavailable bikes on dates requested have been defined in get_available_bikes.
+#     Look for these bike indexes in bikes dictionaries and if found, remove them
+#     """
+
+#     # loop through bikes dictionaries
+#     for j in range(len(bikes_dictionary)):
+#         # loop through the unavailable bikes lists
+#         for i in range(len(bikes_unavailable)):
+#                 # if any of the bike indexes in the unavailable bikes list are found in the bikes dictionaries
+#                 # remove these bike indexes
+#                 if bikes_unavailable[i] in bikes_dictionary[j]['possible_matches']:
+#                     remove_bike = bikes_unavailable[i]
+#                     print(remove_bike)
+#                     bikes_dictionary[j]['possible_matches'].remove(remove_bike)
+#                     # update num_bikes_available list in dictionaries
+#                     bikes_dictionary[j]['num_bikes_available'] = (len(bikes_dictionary[j]['possible_matches']))
+
+
+# remove_unavailable_bikes()
+
+
+# def choose_bikes():
+#     """
+#     If more than one match, pick first one
+#     """
+
+#     # loop through bike dictionary
+#     for j in range(len(bikes_dictionary)):
+             
+#         # if there is more than 1 possible match, pick the first one and remove the rest
+#         if bikes_dictionary[j]['num_bikes_available'] > 1:
+#             first_bike = (bikes_dictionary[j]['possible_matches'][0])
+#             bikes_dictionary[j]['possible_matches'] = first_bike
+#         else:
+#             bikes_dictionary[j]['possible_matches'] = bikes_dictionary[j]['possible_matches'][0]
+
+#         # rename the key to chosen bike instead of possible bikes, now it has been narrowed down to 1 choice      
+#         bikes_dictionary[j]['chosen_bike'] = bikes_dictionary[j]['possible_matches']
+#         del bikes_dictionary[j]['possible_matches'] 
+
+# choose_bikes()
+#pprint(bikes_dictionary)
+
+# # def check_duplicates():
+
+
+
 # def book_bikes_to_calendar():
 #     # look for bike index
 #     # look for last value in that row
