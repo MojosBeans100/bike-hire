@@ -84,40 +84,6 @@ def match_size():
 
 match_size()
 
-# pprint(bikes_dictionary)
-
-#print(len((bikes_dictionary))-1)
-
-# def same_bike():
-#     """
-#     This function determines if there are two or more of the same bike requested
-#     Based on bike type and size
-#     """
-#     global same_bikes
-#     same_bikes = {
-#         'same_1': [],
-#         'same_2': [],
-#         'same_3': [],
-#     }
-
-#     # loop through bike dictionaries
-#     for i in range(len(bikes_dictionary)):
-
-#         # i = j, we are comparing dictionaries against each other
-#         for j in range(0, len((bikes_dictionary))-1):
-
-#             # ignore when i and j are the same number as we are comparing the same dictionary here
-#             if i == j:
-#                 continue
-
-#             # when i and j are not the same, compare dictionaries and if the same, return
-#             else:
-#                 print(f"i = {i}")
-#                 print(f"j = {j}")
-#                 if bikes_dictionary[i] == bikes_dictionary[j]:
-#                     print(f"{i} and {j} are the same")
-
-# same_bike()
 
 def match_price():
     """
@@ -168,40 +134,84 @@ def check_availability():
 
     # calculate end date based on the hire duration
     delta = timedelta(days=int(responses_list[-1][6]) - 1)
+    delta_day = timedelta(days=int(1))
     end_date = start_date + delta
+
+    print(delta)
+    print(end_date)
 
     # list all dates in between
     global hire_dates_requested
     hire_dates_requested = []
     while start_date <= end_date:
         hire_dates_requested.append(start_date.strftime("%Y-%m-%d"))
-        start_date += delta
+        start_date += delta_day
 
     print(hire_dates_requested)
 
-    # for each bike dictionary
-    for j in range(len(bikes_dictionary)):
+    # # for each bike dictionary
+    # for j in range(len(bikes_dictionary)):
 
-        # and for each date in the requested hire period
-        for k in range(len(hire_dates_requested)):
+    #     # and for each date in the requested hire period
+    #     for k in range(len(hire_dates_requested)):
 
-            # and for each bike index and the calendar
-            for i in range(len(calendar)):
+    #         # and for each bike index and the calendar
+    #         for i in range(len(calendar)):
 
-                # if any of the bike indexes in the calendar are found in the bike dictionaries
-                if calendar[i][0] in bikes_dictionary[j]['possible_matches']:
+    #             # if any of the bike indexes in the calendar are found in the bike dictionaries
+    #             if calendar[i][0] in bikes_dictionary[j]['possible_matches']:
 
-                    # and if any of the dates in the requested hire period are found against that bike index ie already booked
-                    if hire_dates_requested[k] in calendar[i]:       
+    #                 # and if any of the dates in the requested hire period are found against that bike index ie already booked
+    #                 if hire_dates_requested[k] in calendar[i]:       
 
-                        # then remove this bike index from the bike dictionaries as it is not available for hire                 
-                        (bikes_dictionary[j]['possible_matches']).remove(calendar[i][0])
+    #                     # then remove this bike index from the bike dictionaries as it is not available for hire on that date                 
+    #                     (bikes_dictionary[j]['possible_matches']).remove(calendar[i][0])
                         
+    #     def book_bikes():
+    #         print(j)
+
+
+
 
 check_availability()
 
+#pprint(bikes_dictionary)
 
-pprint(bikes_dictionary)
+
+# def same_bike():
+#     """
+#     This function determines if there are two or more of the same bike requested
+#     Based on bike type and size
+#     """
+#     global same_bikes
+#     same_bikes = {
+#         'same_1': ["SMELLO","HELLO"],
+#         'same_2': [],
+#         'same_3': [],
+#     }
+
+#     # loop through bike dictionaries
+#     for i in range(len(bikes_dictionary)):
+
+#         # i = j, we are comparing dictionaries against each other
+#         for j in range(0, len((bikes_dictionary))-1):
+
+#             # ignore when i and j are the same number as we are comparing the same dictionary here
+#             if i == j:
+#                 continue
+
+#             # when i and j are not the same, compare dictionaries and if the same, return
+#             else:
+#                 print(f"i = {i}")
+#                 print(f"j = {j}")
+#                 if bikes_dictionary[i] == bikes_dictionary[j]:
+                    
+#                     # print(f"{i} and {j} are the same")
+
+
+# same_bike()
+
+
 
 # def get_available_bikes():
 #     """
