@@ -179,27 +179,22 @@ def check_availability():
 
     print(hire_dates_requested)
 
-    #pprint(bikes_dictionary)
-
+    # for each bike dictionary
     for j in range(len(bikes_dictionary)):
 
+        # and for each date in the requested hire period
         for k in range(len(hire_dates_requested)):
-        #print(j)
+
+            # and for each bike index and the calendar
             for i in range(len(calendar)):
-            #print(j, i)
+
+                # if any of the bike indexes in the calendar are found in the bike dictionaries
                 if calendar[i][0] in bikes_dictionary[j]['possible_matches']:
-                #print(f"This bike index: {calendar[i][0]} exists in bike dictionary {j}")
-                
-                    #print(f"Bike dictionary {j}, calendar row found in bike dictionary {i}, dates requested {k} {hire_dates_requested[k]}")
-        #             # print(f"Hire dates requested {hire_dates_requested}")
-        #             # print(f"k = {k}")
-                    if hire_dates_requested[k] in calendar[i]:
-                        # print(hire_dates_requested[k])
-                        print(calendar[i])
-                        # print(f"Possible matches: {bikes_dictionary[j]['possible_matches']}")
-                        print(f"i={i}")
-                        # print(f"Calendar {i} ")
-                        
+
+                    # and if any of the dates in the requested hire period are found against that bike index ie already booked
+                    if hire_dates_requested[k] in calendar[i]:       
+
+                        # then remove this bike index from the bike dictionaries as it is not available for hire                 
                         (bikes_dictionary[j]['possible_matches']).remove(calendar[i][0])
                         
 
