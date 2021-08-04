@@ -177,24 +177,31 @@ def check_availability():
         hire_dates_requested.append(start_date.strftime("%Y-%m-%d"))
         start_date += delta
 
-    pprint(bikes_dictionary)
+    print(hire_dates_requested)
+
+    #pprint(bikes_dictionary)
 
     for j in range(len(bikes_dictionary)):
-        #print(f"j={j}")
-        for i in range(len(calendar)):
-            #print(f"i={i}")
-            if calendar[i][0] in bikes_dictionary[j]['possible_matches']:
-                for k in range(len(hire_dates_requested)):
-                    if hire_dates_requested[k] in calendar[i]:
-                        unav = hire_dates_requested[k]
-                        
-                        print(f"Unavailable dates {unav} {i}")
-                        print(calendar[i][0])
-                        # print(unav)
-                        (bikes_dictionary[j]['possible_matches']).remove(calendar[i][0])
-                        #print(bikes_dictionary[j]['possible_matches'])
 
-    
+        for k in range(len(hire_dates_requested)):
+        #print(j)
+            for i in range(len(calendar)):
+            #print(j, i)
+                if calendar[i][0] in bikes_dictionary[j]['possible_matches']:
+                #print(f"This bike index: {calendar[i][0]} exists in bike dictionary {j}")
+                
+                    #print(f"Bike dictionary {j}, calendar row found in bike dictionary {i}, dates requested {k} {hire_dates_requested[k]}")
+        #             # print(f"Hire dates requested {hire_dates_requested}")
+        #             # print(f"k = {k}")
+                    if hire_dates_requested[k] in calendar[i]:
+                        # print(hire_dates_requested[k])
+                        print(calendar[i])
+                        # print(f"Possible matches: {bikes_dictionary[j]['possible_matches']}")
+                        print(f"i={i}")
+                        # print(f"Calendar {i} ")
+                        
+                        (bikes_dictionary[j]['possible_matches']).remove(calendar[i][0])
+                        
 
 check_availability()
 
@@ -407,3 +414,23 @@ pprint(bikes_dictionary)
 #             if bike_type == bikes_list[i][4]:
 #                 suitable_bikes.append(bikes_list[i][0])
 #                 # bikes_dictionary[bike_type]['possible_matches'] = (bikes_list[i][0])
+
+
+# for j in range(len(bikes_dictionary)):
+#         #print(j)
+#         for i in range(len(calendar)):
+#             #print(j, i)
+#             if calendar[i][0] in bikes_dictionary[j]['possible_matches']:
+#                 #print(f"This bike index: {calendar[i][0]} exists in bike dictionary {j}")
+#                 for k in range(len(hire_dates_requested)):
+#                     #print(f"Bike dictionary {j}, calendar row found in bike dictionary {i}, dates requested {k} {hire_dates_requested[k]}")
+#         #             # print(f"Hire dates requested {hire_dates_requested}")
+#         #             # print(f"k = {k}")
+#                     if hire_dates_requested[k] in calendar[i]:
+#                         # print(hire_dates_requested[k])
+#                         # print(calendar[i])
+#                         # print(f"Possible matches: {bikes_dictionary[j]['possible_matches']}")
+#                         print(f"i={i}")
+#                         # print(f"Calendar {i} ")
+                        
+#                         (bikes_dictionary[j]['possible_matches']).remove(calendar[i][0])
