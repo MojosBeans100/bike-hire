@@ -1,4 +1,5 @@
 import gspread
+import random
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 from datetime import timedelta
@@ -20,7 +21,9 @@ bikes_list = SHEET.worksheet('bike_list').get_all_values()
 responses_list = SHEET.worksheet('form_responses').get_all_values()
 sort_data = SHEET.worksheet('sort_data').get_all_values()
 calendar = SHEET.worksheet('calendar').get_all_values()
+update_calendar = SHEET.worksheet('calendar')
 gs_size_guide = SHEET.worksheet('size_guide').get_all_values()
+
 
 
 def get_latest_response():
@@ -140,9 +143,6 @@ def check_availability():
     delta_day = timedelta(days=int(1))
     end_date = start_date + delta
 
-    print(delta)
-    print(end_date)
-
     # list all dates in between
     global hire_dates_requested
     hire_dates_requested = []
@@ -173,19 +173,85 @@ def check_availability():
 
 check_availability()
 
-pprint(bikes_dictionary)
+#pprint(bikes_dictionary)
 
-# def book_bikes():
-#     """
-#     If there is a match, book these bikes in here
-#     """
+def book_bikes():
+    """
+    If there is a match, book these bikes in here
+    """
 
-#     # for the first bike dictionary, from possible matches select one and add the dates to the calendar
-#     for j in range(len(bikes_dictionary)):
-#         if len(bikes_dictionary[j]['possible_matches']) = 0:
-#             continue 
-#         else if:
-#             len(bikes_dictionary[j]['possible_matches']) = 1:
+    global choose_bike_index
+    choose_bike_index = ""
+
+    # for the first bike dictionary, from possible matches select one and add the dates to the calendar
+    for j in range(len(bikes_dictionary)):
+       
+        # if the possible matches list is empty, move onto next j value
+        if len(bikes_dictionary[j]['possible_matches']) == 0:
+            print(f"Bikes d {j} length is 0")
+            continue 
+
+        # if the possible matches list = 1, then there is only 1 choice 
+        # so select that and remove it from other bike dictionaries possible matches list
+        elif len(bikes_dictionary[j]['possible_matches']) == 1:
+
+            choose_bike_index = bikes_dictionary[j]['possible_matches'][0]
+            
+            # for all bike indexes in the gs calendar
+            for i in range(len(calendar)):
+                
+                # if bike index on calendar does NOT equal bike index in dictionary,
+                # we are not interested in this index, so increment i
+                if calendar[i][0] != choose_bike_index:
+                    continue 
+
+                else:
+                    # if the bike indexes do match, determine the next empty cell next to that bike index
+                    last_date_in_row = len((calendar[i]))-(calendar[i].count('') - 1)
+
+                    print(f"Length of row {i} {len((calendar[i]))}")
+                    print(f"No. of blanks in row {i} {(calendar[i].count(''))}")
+                    print(f"Last date in row column = {last_date_in_row}")
+
+                    # loop through the hire dates requested
+                    for k in range(len(hire_dates_requested)):
+                        
+                        # update the google sheet by inputting all hire dates requested against that bike index
+                        update_calendar.update_cell(i+1, last_date_in_row, hire_dates_requested[k])
+
+                        # increment the last empty cell ref, so we are not overwriting the same cell
+                        last_date_in_row += 1
+
+            # remove this bike index from possible matches as it is now booked
+            #         
+                        
+        else:
+            choose_bike_index = random.choice(bikes_dictionary[j]['possible_matches'])
+            #print(f"Bikes d {j} length is {len(bikes_dictionary[j]['possible_matches'])}")
+            #print(choose_bike_index)
+
+
+book_bikes()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
