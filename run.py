@@ -206,7 +206,7 @@ def check_availability(bikes_dictionary):
                     # that date
                     (bikes_dictionary[j]['possible_matches']).remove(unavailable_bikes[k])
 
-    #book_bikes(bikes_dictionary)
+    book_bikes(bikes_dictionary)
 
 def book_bikes_to_calendar(choose_bike_index):
     """
@@ -214,32 +214,31 @@ def book_bikes_to_calendar(choose_bike_index):
     in google sheets
     """
 
-    # for j in range(len(bikes_dictionary)):
-        # for all bike indexes in the gs calendar
-        for i in range(len(calendar)):
+    # for all bike indexes in the gs calendar
+    for i in range(len(calendar)):
                 
             # if bike index on calendar does NOT equal bike index in
             # dictionary, we are not interested in this index,
             # so increment i
-            if calendar[i][0] != choose_bike_index:
+        if calendar[i][0] != choose_bike_index:
                 continue
 
-            else:
+        else:
                 # if the bike indexes do match, determine the next empty 
                 # cell next to that bike index
-                last_date_in_row = len((calendar[i]))-(calendar[i].count('') - 1)
+            last_date_in_row = len((calendar[i]))-(calendar[i].count('') - 1)
 
                 # loop through the hire dates requested
-                for k in range(len(hire_dates_requested)):
+            for k in range(len(hire_dates_requested)):
                             
                     # update the google sheet by inputting all hire dates 
                     # requested against that bike index
-                    update_calendar.update_cell(i+1, last_date_in_row,
-                    hire_dates_requested[k])
+                update_calendar.update_cell(i+1, last_date_in_row,
+                hire_dates_requested[k])
 
                     # increment the last empty cell ref, so we are not  
                     # overwriting the same cell
-                    last_date_in_row += 1
+                last_date_in_row += 1
 
 
 # #pprint(bikes_dictionary)
@@ -255,75 +254,62 @@ def book_bikes(bikes_dictionary):
 
     # for each bike dictionary
     for j in range(len(bikes_dictionary)):
-       
-        # if the possible matches list is empty, move onto next j value
-        # also add a comment and append this bike dictionary to not_booked_bikes 
-        if len(bikes_dictionary[j]['possible_matches']) == 0:
-            
-            bikes_dictionary[j]['comments'] = "No bikes available"
-            not_booked_bikes.append(bikes_dictionary[j])
 
-            continue 
+        if bikes_dictionary[j]['status'] != "Booked":
 
-        # if the possible matches list = 1, then there is only 1 choice
-        # so select that, call up book_bikes_to_calendar,
-        # and remove it from other bike dictionaries 'possible matches' list
-        elif len(bikes_dictionary[j]['possible_matches']) == 1:
+            # if the possible matches list is empty, move onto next j value
+            # also add a comment and append this bike dictionary to not_booked_bikes 
+            if len(bikes_dictionary[j]['possible_matches']) == 0:
+                
+                bikes_dictionary[j]['comments'] = "No bikes available"
+                not_booked_bikes.append(bikes_dictionary[j])
 
-            # assign chosen_bike_index to this solo bike index
-            choose_bike_index = bikes_dictionary[j]['possible_matches'][0]
+                continue 
 
-            # call up book_bikes_to_calendar function 
-            book_bikes_to_calendar(choose_bike_index)
+            # if the possible matches list = 1, then there is only 1 choice
+            # so select that, call up book_bikes_to_calendar,
+            # and remove it from other bike dictionaries 'possible matches' list
+            elif len(bikes_dictionary[j]['possible_matches']) == 1:
 
-            # change status, update this bike dictionary, add bike
-            # index to unavailable_bikes list, add this bike dict to
-            # booked_bikes list
-            bikes_dictionary[j]['status'] = "Booked"
-            print(f"Bike index {choose_bike_index} booked!")
-            bikes_dictionary[j]['booked_bike'] = choose_bike_index
-            unavailable_bikes.append(choose_bike_index)
-            booked_bikes.append(bikes_dictionary[j])
+                # assign chosen_bike_index to this solo bike index
+                choose_bike_index = bikes_dictionary[j]['possible_matches'][0]
 
-            # again loop through bikes dictionaries to check if 
-            # this bike index appears in any other bike dictionaries
-            # since it is now booked, remove it from 
-            # any other bike dictionaries
-            for l in range(len(bikes_dictionary)):
-                if choose_bike_index in bikes_dictionary[l]['possible_matches'] and bikes_dictionary[l]['status'] != "Booked":
-                    bikes_dictionary[l]['possible_matches'].remove(choose_bike_index) 
-                else:
-                     for l in range(len(bikes_dictionary)):
-                        for q in range(len(booked_bikes)):
-                            if choose_bike_index == booked_bikes[q]['booked_bike']:
-                                bikes_dictionary[l]['possible_matches'].remove(choose_bike_index)
-            
+                # call up book_bikes_to_calendar function 
+                book_bikes_to_calendar(choose_bike_index)
 
-        # if there is more than 1 bike available
-        # randomly select a bike index from possible matches
-        else:
+                # change status, update this bike dictionary, add bike
+                # index to unavailable_bikes list, add this bike dict to
+                # booked_bikes list
+                bikes_dictionary[j]['status'] = "Booked"
+                print(f"Bike index {choose_bike_index} booked!")
+                bikes_dictionary[j]['booked_bike'] = choose_bike_index
+                unavailable_bikes.append(choose_bike_index)
+                booked_bikes.append(bikes_dictionary[j])
 
-            choose_bike_index = random.choice(bikes_dictionary[j]['possible_matches'])
+                # re-run check_availability to remove this bike index from
+                # other bike dicts
+                check_availability(bikes_dictionary)
+                
 
-            book_bikes_to_calendar(choose_bike_index)
+            # if there is more than 1 bike available
+            # randomly select a bike index from possible matches
+            else:
 
-            bikes_dictionary[j]['status'] = "Booked"
-            print(f"Bike index {choose_bike_index} booked!")
-            bikes_dictionary[j]['booked_bike'] = choose_bike_index
-            booked_bikes.append(bikes_dictionary[j])
+                # randomly select one of the possible matches
+                choose_bike_index = random.choice(bikes_dictionary[j]['possible_matches'])
 
-            # again loop through bikes dictionaries to check if 
-            # this bike index appears in any other bike dictionaries
-            # since it is now booked, remove it from 
-            # any other bike dictionaries
-            for l in range(len(bikes_dictionary)):
-                if choose_bike_index in bikes_dictionary[l]['possible_matches'] and bikes_dictionary[l]['status'] != "Booked":
-                    bikes_dictionary[l]['possible_matches'].remove(choose_bike_index) 
-                else:
-                     for l in range(len(bikes_dictionary)):
-                        for q in range(len(booked_bikes)):
-                            if choose_bike_index == booked_bikes[q]['booked_bike']:
-                                bikes_dictionary[l]['possible_matches'].remove(choose_bike_index)
+                # run function with this bike index
+                book_bikes_to_calendar(choose_bike_index)
+
+                bikes_dictionary[j]['status'] = "Booked"
+                print(f"Bike index {choose_bike_index} booked!")
+                bikes_dictionary[j]['booked_bike'] = choose_bike_index
+                unavailable_bikes.append(choose_bike_index)
+                booked_bikes.append(bikes_dictionary[j])
+
+                # re-run check_availability to remove this bike index from
+                # other bike dicts
+                check_availability(bikes_dictionary)
             
 
         if bikes_dictionary[j]['status'] != "Booked":
