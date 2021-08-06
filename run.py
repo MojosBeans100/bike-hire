@@ -71,7 +71,8 @@ def get_latest_response():
         }
         bikes_dictionary.append(d)
 
-    num_req_bikes = len(bikes_dictionary)
+    # num_req_bikes = len(d)
+    # print(f"Num req bikes = {num_req_bikes}")
 
     match_size(bikes_dictionary)
 
@@ -260,53 +261,13 @@ def book_bikes(bikes_dictionary):
             bikes_dictionary[j]['booked_bike'] = choose_bike_index
             booked_bikes.append(bikes_dictionary[j])
 
-                    # again loop through bikes dictionaries to check if 
-                    # this bike index appears in any other bike dictionaries
-                    # since it is now booked, remove it from 
-                    # any other bike dictionaries
+            # again loop through bikes dictionaries to check if 
+            # this bike index appears in any other bike dictionaries
+            # since it is now booked, remove it from 
+            # any other bike dictionaries
             for l in range(len(bikes_dictionary)):
                 if choose_bike_index in bikes_dictionary[l]['possible_matches'] and bikes_dictionary[l]['status'] != "Booked":
                     bikes_dictionary[l]['possible_matches'].remove(choose_bike_index) 
-            
-            # # for all bike indexes in the gs calendar
-            # for i in range(len(calendar)):
-                
-            #     # if bike index on calendar does NOT equal bike index in
-            #     # dictionary, we are not interested in this index,
-            #     # so increment i
-            #     if calendar[i][0] != choose_bike_index:
-            #         continue
-
-            #     else:
-            #         # if the bike indexes do match, determine the next empty \
-            #         # cell next to that bike index
-            #         last_date_in_row = len((calendar[i]))-(calendar[i].count('') - 1)
-
-            #         # loop through the hire dates requested
-            #         for k in range(len(hire_dates_requested)):
-                        
-            #             # update the google sheet by inputting all hire dates \
-            #             # requested against that bike index
-            #             update_calendar.update_cell(i+1, last_date_in_row,
-            #             hire_dates_requested[k])
-
-            #             # increment the last empty cell ref, so we are not  \
-            #             # overwriting the same cell
-            #             last_date_in_row += 1
-
-            #         # book bike
-            #         bikes_dictionary[j]['status'] = "Booked"
-            #         print(f"Bike index {choose_bike_index} booked!")
-            #         bikes_dictionary[j]['booked_bike'] = choose_bike_index
-            #         booked_bikes.append(bikes_dictionary[j])
-
-            #         # again loop through bikes dictionaries to check if 
-            #         # this bike index appears in any other bike dictionaries
-            #         # since it is now booked, remove it from 
-            #         # any other bike dictionaries
-            #         for l in range(len(bikes_dictionary)):
-            #             if choose_bike_index in bikes_dictionary[l]['possible_matches'] and bikes_dictionary[l]['status'] != "Booked":
-            #                 bikes_dictionary[l]['possible_matches'].remove(choose_bike_index) 
 
         # if there is more than 1 bike available
         else:
@@ -320,62 +281,21 @@ def book_bikes(bikes_dictionary):
             bikes_dictionary[j]['booked_bike'] = choose_bike_index
             booked_bikes.append(bikes_dictionary[j])
 
-                    # again loop through bikes dictionaries to check if 
-                    # this bike index appears in any other bike dictionaries
-                    # since it is now booked, remove it from 
-                    # any other bike dictionaries
+            # again loop through bikes dictionaries to check if 
+            # this bike index appears in any other bike dictionaries
+            # since it is now booked, remove it from 
+            # any other bike dictionaries
             for l in range(len(bikes_dictionary)):
                 if choose_bike_index in bikes_dictionary[l]['possible_matches'] and bikes_dictionary[l]['status'] != "Booked":
                     bikes_dictionary[l]['possible_matches'].remove(choose_bike_index) 
             
-            # # for all bike indexes in the gs calendar
-            # for i in range(len(calendar)):
-                
-            #     # if bike index on calendar does NOT equal
-            #     # bike index in dictionary,
-            #     # we are not interested in this index, so increment i
-            #     if calendar[i][0] != choose_bike_index:
-            #         continue 
-
-            #     else:
-            #         # if the bike indexes do match, determine the next empty
-            #         # cell next to that bike index
-            #         last_date_in_row = len((calendar[i]))-(calendar[i].count('') - 1)
-
-            #         #print(f"Length of row {i} {len((calendar[i]))}")
-            #         #print(f"No. of blanks in row {i} {(calendar[i].count(''))}")
-            #         #print(f"Last date in row column = {last_date_in_row}")
-
-            #         # loop through the hire dates requested
-            #         for k in range(len(hire_dates_requested)):
-                        
-            #             # update the google sheet by inputting all hire dates
-            #             # requested against that bike index
-            #             update_calendar.update_cell(i+1, last_date_in_row, hire_dates_requested[k])
-
-            #             # increment the last empty cell ref, so we are not overwriting the same cell
-            #             last_date_in_row += 1
-
-            #         # book bike
-            #         bikes_dictionary[j]['status'] = "Booked"
-            #         print(f"Bike index {choose_bike_index} booked!")
-            #         bikes_dictionary[j]['booked_bike'] = choose_bike_index
-            #         booked_bikes.append(bikes_dictionary[j])
-            #         #bikes_dictionary.remove(bikes_dictionary[j])
-
-            #         # again loop through bikes dictionaries to check if 
-            #         # this bike index appears in any other bike dictionaries
-            #         # since it is now booked, remove it from any
-            #         # other bike dictionaries
-            #         for l in range(len(bikes_dictionary)):
-            #             if choose_bike_index in bikes_dictionary[l]['possible_matches'] and bikes_dictionary[l]['status'] != "Booked":
-            #                 bikes_dictionary[l]['possible_matches'].remove(choose_bike_index) 
 
         if bikes_dictionary[j]['status'] != "Booked":
             not_booked_bikes.append(bikes_dictionary[j])
 
     print(not_booked_bikes)
-    print(len(booked_bikes))    
+    print(len(booked_bikes))
+    print(len(num_req_bikes))
     # if booked bikes 
     if len(booked_bikes) == int(num_req_bikes):
         print("ALL BIKES BOOKED")
