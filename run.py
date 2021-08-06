@@ -173,40 +173,38 @@ def match_suitable_bikes(bikes_dictionary):
                 
             bikes_dictionary[j]['num_bikes_available'] = (len(bikes_dictionary[j]['possible_matches']))
 
+    #print(f"Before check avail: {bikes_dictionary}")
     check_availability(bikes_dictionary)
     
 
-# def check_availability(bikes_dictionary):
-#     """
-#     Cross reference bike dictionaries with dates
-#     from calendar to check availability
-#     """
+def check_availability(bikes_dictionary):
+    """
+    Cross reference possible matches in bike dictionaries with bike
+    indexes in 'unavailable_bikes' list to check availability
+    If not available, remove this bike index from the bike dictionary
+    """
     
-#     #print(hire_dates_requested)
+    #print(hire_dates_requested)
+    print(unavailable_bikes)
+    print(bikes_dictionary)
 
-#     # for each bike dictionary
-#     for j in range(len(bikes_dictionary)):
+    # for each bike dictionary
+    for j in range(len(bikes_dictionary)):
 
-#         if bikes_dictionary[j]["status"] != "Booked":
+        # only considering bikes who aren't already booked
+        if bikes_dictionary[j]["status"] != "Booked":
 
-#             # and for each date in the requested hire period
-#             for k in range(len(hire_dates_requested)):
+            # and for bike index in unavailable bikes
+            for k in range(len(unavailable_bikes)):
 
-#                 # and for each bike index and the calendar
-#                 for i in range(len(calendar)):
+                # if any of the bike indexes in unavailable bikes are found
+                # in the bike dictionaries
+                if unavailable_bikes[k] in bikes_dictionary[j]['possible_matches']:
 
-#                     # if any of the bike indexes in the calendar are found
-#                     # in the bike dictionaries
-#                     if calendar[i][0] in bikes_dictionary[j]['possible_matches']:
-
-#                         # and if any of the dates in the requested hire period
-#                         # are found against that bike index ie already booked
-#                         if hire_dates_requested[k] in calendar[i]:       
-
-#                             # then remove this bike index from the bike
-#                             # dictionaries as it is not available for hire on that date                 
-#                             (bikes_dictionary[j]['possible_matches']).remove(calendar[i][0])
-#                             unavailable_bikes.append(calendar[i][0])
+                    # then remove this bike index from the bike
+                    # dictionaries as it is not available for hire on
+                    # that date                 
+                    (bikes_dictionary[j]['possible_matches']).remove(unavailable_bikes[k])
 
     #book_bikes(bikes_dictionary)
 
