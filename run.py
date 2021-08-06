@@ -98,8 +98,6 @@ def match_size(bikes_dictionary):
     match_price(bikes_dictionary)
 
 
-
-
 def match_price(bikes_dictionary):
     """
     Fetch the price per day based on the bike type selected and append to dictionary
@@ -116,9 +114,46 @@ def match_price(bikes_dictionary):
             if (bikes_list[j][4]) == bikes_dictionary[i]['bike_type']:
                 bikes_dictionary[i]['price_per_day'] = bikes_list[j][5]
     
+    find_unavailable_bikes()
+
+
+def find_unavailable_bikes():
+    """
+    Define a list of unavailable bikes for those dates
+    """
+
+    # get users selected date
+    users_start_date = responses_list[-1][5]
+
+    # put date in readable format
+    start_date = datetime.strptime(users_start_date, "%Y-%m-%d")
+
+    # calculate end date based on the hire duration
+    delta = timedelta(days=int(responses_list[-1][6]) - 1)
+    delta_day = timedelta(days=int(1))
+    end_date = start_date + delta
+
+    # list all dates in between
+    global hire_dates_requested
+    hire_dates_requested = []
+    while start_date <= end_date:
+        hire_dates_requested.append(start_date.strftime("%Y-%m-%d"))
+        start_date += delta_day
+
+    # for each date in the requested hire period
+    for k in range(len(hire_dates_requested)):
+
+        # and for each bike index in the calendar
+        for i in range(len(calendar)):
+
+            # if any of the bike indexes in the calendar are found
+            # in the requested hire period
+            if hire_dates_requested[k] in calendar[i]:
+
+                # then create a list of these unavailabe bikes
+                unavailable_bikes.append(calendar[i][0])
+
     match_suitable_bikes(bikes_dictionary)
-
-
 
 
 def match_suitable_bikes(bikes_dictionary):
@@ -139,76 +174,39 @@ def match_suitable_bikes(bikes_dictionary):
             bikes_dictionary[j]['num_bikes_available'] = (len(bikes_dictionary[j]['possible_matches']))
 
     check_availability(bikes_dictionary)
-    find_unavailable_bikes()
-          
+    
 
-def find_unavailable_bikes():
-    """
-    Define a list of unavailable bikes for those dates
-    """
-    # for each date in the requested hire period
-    for k in range(len(hire_dates_requested)):
+# def check_availability(bikes_dictionary):
+#     """
+#     Cross reference bike dictionaries with dates
+#     from calendar to check availability
+#     """
+    
+#     #print(hire_dates_requested)
 
-        # and for each bike index in the calendar
-        for i in range(len(calendar)):
+#     # for each bike dictionary
+#     for j in range(len(bikes_dictionary)):
 
-            # if any of the bike indexes in the calendar are found
-            # in the requested hire period
-            if hire_dates_requested[k] in calendar[i]:
+#         if bikes_dictionary[j]["status"] != "Booked":
 
-                # then create a list of these unavailabe bikes
-                unavailable_bikes.append(calendar[i][0])
+#             # and for each date in the requested hire period
+#             for k in range(len(hire_dates_requested)):
 
+#                 # and for each bike index and the calendar
+#                 for i in range(len(calendar)):
 
+#                     # if any of the bike indexes in the calendar are found
+#                     # in the bike dictionaries
+#                     if calendar[i][0] in bikes_dictionary[j]['possible_matches']:
 
-def check_availability(bikes_dictionary):
-    """
-    Cross reference bike dictionaries with dates
-    from calendar to check availability
-    """
-    # get users selected date
-    users_start_date = responses_list[-1][5]
+#                         # and if any of the dates in the requested hire period
+#                         # are found against that bike index ie already booked
+#                         if hire_dates_requested[k] in calendar[i]:       
 
-    # put date in readable format
-    start_date = datetime.strptime(users_start_date, "%Y-%m-%d")
-
-    # calculate end date based on the hire duration
-    delta = timedelta(days=int(responses_list[-1][6]) - 1)
-    delta_day = timedelta(days=int(1))
-    end_date = start_date + delta
-
-    # list all dates in between
-    global hire_dates_requested
-    hire_dates_requested = []
-    while start_date <= end_date:
-        hire_dates_requested.append(start_date.strftime("%Y-%m-%d"))
-        start_date += delta_day
-
-    #print(hire_dates_requested)
-
-    # for each bike dictionary
-    for j in range(len(bikes_dictionary)):
-
-        if bikes_dictionary[j]["status"] != "Booked":
-
-            # and for each date in the requested hire period
-            for k in range(len(hire_dates_requested)):
-
-                # and for each bike index and the calendar
-                for i in range(len(calendar)):
-
-                    # if any of the bike indexes in the calendar are found
-                    # in the bike dictionaries
-                    if calendar[i][0] in bikes_dictionary[j]['possible_matches']:
-
-                        # and if any of the dates in the requested hire period
-                        # are found against that bike index ie already booked
-                        if hire_dates_requested[k] in calendar[i]:       
-
-                            # then remove this bike index from the bike
-                            # dictionaries as it is not available for hire on that date                 
-                            (bikes_dictionary[j]['possible_matches']).remove(calendar[i][0])
-                            unavailable_bikes.append(calendar[i][0])
+#                             # then remove this bike index from the bike
+#                             # dictionaries as it is not available for hire on that date                 
+#                             (bikes_dictionary[j]['possible_matches']).remove(calendar[i][0])
+#                             unavailable_bikes.append(calendar[i][0])
 
     #book_bikes(bikes_dictionary)
 
