@@ -190,7 +190,7 @@ def check_availability(bikes_dictionary):
 
     book_bikes(bikes_dictionary)
 
-def book_bikes_to_calendar(choose_bike_index, j):
+def book_bikes_to_calendar(choose_bike_index):
 
     # for j in range(len(bikes_dictionary)):
         # for all bike indexes in the gs calendar
@@ -219,19 +219,7 @@ def book_bikes_to_calendar(choose_bike_index, j):
                     # overwriting the same cell
                     last_date_in_row += 1
 
-                    # book bike
-                    bikes_dictionary[j]['status'] = "Booked"
-                    print(f"Bike index {choose_bike_index} booked!")
-                    bikes_dictionary[j]['booked_bike'] = choose_bike_index
-                    booked_bikes.append(bikes_dictionary[j])
-
-                    # again loop through bikes dictionaries to check if 
-                    # this bike index appears in any other bike dictionaries
-                    # since it is now booked, remove it from 
-                    # any other bike dictionaries
-                    for l in range(len(bikes_dictionary)):
-                        if choose_bike_index in bikes_dictionary[l]['possible_matches'] and bikes_dictionary[l]['status'] != "Booked":
-                            bikes_dictionary[l]['possible_matches'].remove(choose_bike_index) 
+                    
 
 
 #pprint(bikes_dictionary)
@@ -264,7 +252,21 @@ def book_bikes(bikes_dictionary):
             choose_bike_index = bikes_dictionary[j]['possible_matches'][0]
 
             # call up book bikes to function calendar with 
-            book_bikes_to_calendar(choose_bike_index, j)
+            book_bikes_to_calendar(choose_bike_index)
+
+            # book bike
+            bikes_dictionary[j]['status'] = "Booked"
+            print(f"Bike index {choose_bike_index} booked!")
+            bikes_dictionary[j]['booked_bike'] = choose_bike_index
+            booked_bikes.append(bikes_dictionary[j])
+
+                    # again loop through bikes dictionaries to check if 
+                    # this bike index appears in any other bike dictionaries
+                    # since it is now booked, remove it from 
+                    # any other bike dictionaries
+            for l in range(len(bikes_dictionary)):
+                if choose_bike_index in bikes_dictionary[l]['possible_matches'] and bikes_dictionary[l]['status'] != "Booked":
+                    bikes_dictionary[l]['possible_matches'].remove(choose_bike_index) 
             
             # # for all bike indexes in the gs calendar
             # for i in range(len(calendar)):
@@ -311,7 +313,20 @@ def book_bikes(bikes_dictionary):
 
             choose_bike_index = random.choice(bikes_dictionary[j]['possible_matches'])
 
-            book_bikes_to_calendar(choose_bike_index, j)
+            book_bikes_to_calendar(choose_bike_index)
+
+            bikes_dictionary[j]['status'] = "Booked"
+            print(f"Bike index {choose_bike_index} booked!")
+            bikes_dictionary[j]['booked_bike'] = choose_bike_index
+            booked_bikes.append(bikes_dictionary[j])
+
+                    # again loop through bikes dictionaries to check if 
+                    # this bike index appears in any other bike dictionaries
+                    # since it is now booked, remove it from 
+                    # any other bike dictionaries
+            for l in range(len(bikes_dictionary)):
+                if choose_bike_index in bikes_dictionary[l]['possible_matches'] and bikes_dictionary[l]['status'] != "Booked":
+                    bikes_dictionary[l]['possible_matches'].remove(choose_bike_index) 
             
             # # for all bike indexes in the gs calendar
             # for i in range(len(calendar)):
@@ -362,10 +377,10 @@ def book_bikes(bikes_dictionary):
     print(not_booked_bikes)
     print(len(booked_bikes))    
     # if booked bikes 
-    if len(booked_bikes) == num_req_bikes:
+    if len(booked_bikes) == int(num_req_bikes):
         print("ALL BIKES BOOKED")
     
-    elif len(booked_bikes) < num_req_bikes:
+    elif len(booked_bikes) < int(num_req_bikes):
         print("GOT HERE")
         bikes_dictionary = not_booked_bikes
         #print(bikes_dictionary)
