@@ -156,6 +156,8 @@ def find_unavailable_bikes():
                 # then create a list of these unavailabe bikes
                 unavailable_bikes.append(calendar[i][0])
 
+    
+
     #print("find unavailable bikes")
     match_suitable_bikes(bikes_dictionary)
 
@@ -197,27 +199,28 @@ def check_availability(bikes_dictionary):
     # for each bike dictionary
     for j in range(len(bikes_dictionary)):
 
-        # only considering bikes who aren't already booked
-        if bikes_dictionary[j]["status"] != "Booked":
+        # # only considering bikes who aren't already booked
+        # if bikes_dictionary[j]["status"] != "Booked":
 
-            # and for bike index in unavailable bikes
-            for k in range(len(unavailable_bikes)):
+        # and for bike index in unavailable bikes
+        for k in range(len(unavailable_bikes)):
 
-                # if any of the bike indexes in unavailable bikes are found
-                # in the bike dictionaries
-                if unavailable_bikes[k] in bikes_dictionary[j]['possible_matches']:
+            # if any of the bike indexes in unavailable bikes are found
+            # in the bike dictionaries
+            if unavailable_bikes[k] in bikes_dictionary[j]['possible_matches']:
 
-                    # then remove this bike index from the bike
-                    # dictionaries as it is not available for hire on
-                    # that date
-                    (bikes_dictionary[j]['possible_matches']).remove(unavailable_bikes[k])
+                # then remove this bike index from the bike
+                # dictionaries as it is not available for hire on
+                # that date
+                (bikes_dictionary[j]['possible_matches']).remove(unavailable_bikes[k])
 
         
-        if len(booked_bikes) == 0:
-            #print("check availability")
-            book_bikes(bikes_dictionary)
-            
+    if len(booked_bikes) != num_req_bikes:
+         #print("check availability")
+        book_bikes(bikes_dictionary)
 
+    else: 
+        print("STOP!!")
 
     
     #book_bikes(bikes_dictionary)
@@ -325,49 +328,65 @@ def book_bikes(bikes_dictionary):
                 #print(f"Re-checking availability")
                 check_availability(bikes_dictionary)
 
+        else:
+            not_booked_bikes.append(bikes_dictionary[j])
+            return
+    #print(len(booked_bikes))
+    
+
     booked_or_not(bikes_dictionary)
 
 
 def booked_or_not(bikes_dictionary):
 
-    for j in range(len(bikes_dictionary)):
+    # for j in range(len(bikes_dictionary)):
         
-        if bikes_dictionary[j]['status'] != "Booked":
-            not_booked_bikes.append(bikes_dictionary[j])
+    #     if bikes_dictionary[j]['status'] != "Booked":
+    #         not_booked_bikes.append(bikes_dictionary[j])
 
-        
     if len(booked_bikes) == num_req_bikes:
         print("ALL BIKES BOOKED")
 
+
     else:
         bikes_dictionary = not_booked_bikes
+        print("STILL BIKES TO BOOK")
         find_alternatives(bikes_dictionary)
-        #print(bikes_dictionary)
-
+        #print(bikes_dictionary) 
 
 
 def find_alternatives(bikes_dictionary):
-
+    print("IN FIND ALTS")
+    print(bikes_dictionary)
     global alt_bikes
-    alt_bikes = ['Full suspension', 'Full suspension carbon', 
-    'Full suspension carbon e-bike', 'Full suspension e-bike',
-    'Hardtail', 'Hardtail e-bike']
-
-    
 
     for j in range(len(bikes_dictionary)):
 
-        if bikes_dictionary[j]['status'] != "Booked":
+        # list of all available bike types 
+        # keep inside j loop to restart from full list each time
+        alt_bikes = ['Full suspension', 'Full suspension carbon', 
+        'Full suspension carbon e-bike', 'Full suspension e-bike',
+        'Hardtail', 'Hardtail e-bike']
         
-            alt_bikes.remove(bikes_dictionary[j]['bike_type'])
-            bikes_dictionary[j]['bike_type'] = random.choice(alt_bikes)
+        alt_bikes.remove(bikes_dictionary[j]['bike_type'])
+        bikes_dictionary[j]['bike_type'] = random.choice(alt_bikes)
+        bikes_dictionary[j]['comments'] = "Finding alternative bike"
 
-            bikes_dictionary[j]['comments'] = "Finding alternative bike"
+    #print(bikes_dictionary)    
     
     match_suitable_bikes(bikes_dictionary)
-    book_bikes(bikes_dictionary)
+    
+    #find_unavailable_bikes()
+    #pprint(bikes_dictionary)
+    #book_bikes(bikes_dictionary)
    
 
 
 get_latest_response()
+
+
 pprint(bikes_dictionary)
+
+# print(f"Booked bikes {booked_bikes}")
+# print(f"Not booked bikes {not_booked_bikes}")
+print(f"Unavailable bikes {unavailable_bikes}")
