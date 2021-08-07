@@ -254,8 +254,6 @@ def book_bikes_to_calendar(choose_bike_index):
                 # overwriting the same cell
                 last_date_in_row += 1
 
-    #print("book bikes to calendar")
-# #pprint(bikes_dictionary)
 
 def book_bikes(bikes_dictionary):
     """
@@ -265,9 +263,6 @@ def book_bikes(bikes_dictionary):
 
     global choose_bike_index
     choose_bike_index = ""
-
-    print(f"BEFORE Length of not_booked_bikes = {len(not_booked_bikes)}")
-    print(f"BEFORE Length of booked_bikes = {len(booked_bikes)}")
 
     # for each bike dictionary
     for j in range(len(bikes_dictionary)):
@@ -341,34 +336,13 @@ def booked_or_not(bikes_dictionary):
             not_booked_bikes.append(bikes_dictionary[j])
 
         
+    if len(booked_bikes) == len(bikes_dictionary):
+        print("ALL BIKES BOOKED")
 
-    # print(not_booked_bikes)
-    # print(f"AFTER Length of not_booked_bikes = {len(not_booked_bikes)}")
-    # print(f"AFTER Length of booked_bikes = {len(booked_bikes)}")
-
-    # #print(not_booked_bikes)
-    # #print(len(booked_bikes))
-    
-    # # if booked bikes 
-    # if len(booked_bikes) == len(bikes_dictionary):
-    #     print("ALL BIKES BOOKED")
-    
-    # elif len(booked_bikes) < len(bikes_dictionary):
-    #     print("GOT HERE")
-    #     #bikes_dictionary = not_booked_bikes
-    #     #print(bikes_dictionary)
-    #     #print(not_booked_bikes)
-    #     #find_alternatives(bikes_dictionary)
-    # else:
-    #     print("TOO MANY BOOKED")
-
-    # print("Booked bikes")
-    # pprint(booked_bikes)
-    # print("Not booked bikes")
-    # pprint(not_booked_bikes)
-    # print("Current bike dictionary")
-    # pprint(bikes_dictionary)
-    #find_alternatives(bikes_dictionary)
+    else:
+        bikes_dictionary = not_booked_bikes
+        #find_alternatives(bikes_dictionary)
+        print(bikes_dictionary)
 
 
 
@@ -404,9 +378,9 @@ def booked_or_not(bikes_dictionary):
 
 
 get_latest_response()
-print(f"NOT BOOKED: {not_booked_bikes}")
-print(f"BOOKED: {booked_bikes}")
-print(len(booked_bikes))
+# print(f"NOT BOOKED: {not_booked_bikes}")
+# print(f"BOOKED: {booked_bikes}")
+# print(len(booked_bikes))
 # print(f"Not booked bikes {not_booked_bikes}")
 #pprint(bikes_dictionary)
 
