@@ -1,5 +1,7 @@
 import gspread
 import random
+import copy
+import time
 from google.oauth2.service_account import Credentials
 from datetime import datetime
 from datetime import timedelta
@@ -30,6 +32,11 @@ not_booked_bikes = []
 bikes_dictionary = []
 num_req_bikes = ""
 unavailable_bikes = []
+
+def stop_running():
+    print("STOP!!")
+    raise SystemExit()
+
 
 def get_latest_response():
     """
@@ -103,6 +110,16 @@ def match_price(bikes_dictionary):
     """
     Fetch the price per day based on the bike type selected and append to dictionary
     """
+    #pprint(bikes_dictionary)
+    print(f"Unavailable bikes: {unavailable_bikes}")
+    print(f"Length of booked bikes: {len(booked_bikes)}")
+
+
+
+    time.sleep(5)
+
+    if len(booked_bikes) == 5:
+        stop_running()
 
 
     # iterate through list of bikes dictionaries (max 5)
@@ -125,7 +142,6 @@ def find_unavailable_bikes():
     """
     Define a list of unavailable bikes for those dates
     """
-   
 
     # get users selected date
     users_start_date = responses_list[-1][5]
@@ -156,7 +172,8 @@ def find_unavailable_bikes():
             if hire_dates_requested[k] in calendar[i]:
 
                 # then create a list of these unavailabe bikes
-                unavailable_bikes.append(calendar[i][0])
+                if not calendar[i][0] in unavailable_bikes:
+                    unavailable_bikes.append(calendar[i][0])
 
     
 
@@ -219,7 +236,7 @@ def check_availability(bikes_dictionary):
                 # that date
                 (bikes_dictionary[j]['possible_matches']).remove(unavailable_bikes[k])
 
-        
+
     # if len(booked_bikes) != num_req_bikes:
     #      #print("check availability")
     #     book_bikes(bikes_dictionary)
@@ -262,7 +279,7 @@ def book_bikes_to_calendar(choose_bike_index):
                 # overwriting the same cell
                 last_date_in_row += 1
 
-    print("BOOK BIKES TO CALENDAR")
+    #print("BOOK BIKES TO CALENDAR")
 
 def book_bikes(bikes_dictionary):
     """
@@ -272,10 +289,17 @@ def book_bikes(bikes_dictionary):
     global choose_bike_index
     choose_bike_index = ""
 
+    
+    pprint(bikes_dictionary)
+
+    print("pause before entering book bikes")
+    time.sleep(10)   
+
     # for each bike dictionary
     for j in range(len(bikes_dictionary)):
 
-        print(f"Length of booked bikes {len(booked_bikes)}")
+        #print(f"Length of booked bikes {len(booked_bikes)}")
+        #print(f"j = {j}")
 
         if bikes_dictionary[j]['status'] != "Booked":
 
@@ -308,6 +332,9 @@ def book_bikes(bikes_dictionary):
                 unavailable_bikes.append(choose_bike_index)
                 booked_bikes.append(bikes_dictionary[j])
 
+                if bikes_dictionary[j] in not_booked_bikes:
+                    not_booked_bikes.remove(bikes_dictionary[j])
+
                 # re-run check_availability to remove this bike index from
                 # other bike dicts
                 #print(f"Re-checking availability")
@@ -330,6 +357,9 @@ def book_bikes(bikes_dictionary):
                 unavailable_bikes.append(choose_bike_index)
                 booked_bikes.append(bikes_dictionary[j])
 
+                if bikes_dictionary[j] in not_booked_bikes:
+                    not_booked_bikes.remove(bikes_dictionary[j])
+
                 # re-run check_availability to remove this bike index from
                 # other bike dicts
                 #print(f"Re-checking availability")
@@ -350,26 +380,30 @@ def book_bikes(bikes_dictionary):
 
 def find_alternatives(bikes_dictionary):
 
-    print("IN FIND ALTS")
-    #print(bikes_dictionary)
-    global alt_bikes
+    if not_booked_bikes != 0:
 
-    for j in range(len(bikes_dictionary)):
+        #print("IN FIND ALTS")
+        #print(bikes_dictionary)
+        global alt_bikes
 
-        # list of all available bike types 
-        # keep inside j loop to restart from full list each time
-        alt_bikes = ['Full suspension', 'Full suspension carbon', 
-        'Full suspension carbon e-bike', 'Full suspension e-bike',
-        'Hardtail', 'Hardtail e-bike']
+        for j in range(len(bikes_dictionary)):
+
+            #print(f"Alt len bikes dict : {len(bikes_dictionary)}")
+
+            # list of all available bike types 
+            # keep inside j loop to restart from full list each time
+            alt_bikes = ['Full suspension', 'Full suspension carbon', 
+            'Full suspension carbon e-bike', 'Full suspension e-bike',
+            'Hardtail', 'Hardtail e-bike']
+            
+            alt_bikes.remove(bikes_dictionary[j]['bike_type'])
+            bikes_dictionary[j]['bike_type'] = random.choice(alt_bikes)
+            bikes_dictionary[j]['comments'] = "Finding alternative bike"
+
+        #pprint(bikes_dictionary)    
         
-        alt_bikes.remove(bikes_dictionary[j]['bike_type'])
-        bikes_dictionary[j]['bike_type'] = random.choice(alt_bikes)
-        bikes_dictionary[j]['comments'] = "Finding alternative bike"
+        match_price(bikes_dictionary)
 
-    #pprint(bikes_dictionary)    
-    
-    match_price(bikes_dictionary)
-    
     #find_unavailable_bikes()
     #pprint(bikes_dictionary)
     #book_bikes(bikes_dictionary)
@@ -385,15 +419,20 @@ def booked_or_not(bikes_dictionary):
 
 
     #print(f"NOT BOOKED BIKES {not_booked_bikes}")
+    #print(f"BOOKED BIKES {booked_bikes}")
 
     if len(booked_bikes) == num_req_bikes:
-        print("ALL BIKES BOOKED")
+        #print("ALL BIKES BOOKED")
         return
 
     else:
-        bikes_dictionary = not_booked_bikes
-        print("STILL BIKES TO BOOK")
-        #find_alternatives(bikes_dictionary)
+        bikes_dictionary = copy.copy(not_booked_bikes) 
+        #print("STILL BIKES TO BOOK")
+
+
+        ## THIS IS WHERE THE ERROR IS 
+        find_alternatives(bikes_dictionary)
+        
         #print(bikes_dictionary) 
 
     return
@@ -408,7 +447,7 @@ get_latest_response()
 
 #pprint(bikes_dictionary)
 
-print(f"Booked bikes {booked_bikes}")
-print(f"Not booked bikes {not_booked_bikes}")
-print(f"Unavailable bikes {unavailable_bikes}")
+# print(f"Booked bikes {booked_bikes}")
+# print(f"Not booked bikes {not_booked_bikes}")
+# print(f"Unavailable bikes {unavailable_bikes}")
 
