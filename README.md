@@ -1,8 +1,8 @@
-# Battleships
+# Bike Hire System
 
 ## Portfolio Project 3 - Python Essentials
 
-The purpose of this project was to build an interactive logic game for a user to play against the computer.
+The purpose of this project was to create a booking system whereby users can submit a Google form to enquire about bike hire, and if there are bikes available, the system will book these bikes out against a calendar, and send a confirmation email to both the user and shop owner. 
 
 # Table of Contents
 1. [Link to app](https://github.com/Michelle3334/battleships#link-to-app)
@@ -14,25 +14,46 @@ The purpose of this project was to build an interactive logic game for a user to
 7. [Credits](https://github.com/Michelle3334/battleships#credits)
 8. [Acknowledgements](https://github.com/Michelle3334/battleships#acknowledgements)
 
-# Link to app
-The app can be found <a href="https://battleships-py.herokuapp.com/" target="_blank" rel="noopener">here</a>. (Note: Right click on link to open a new tab).
+# Link to Google Form
+The Google Form can be found <a href="https://docs.google.com/forms/d/e/1FAIpQLSf65gwDPHQ-m0Fo5ZylJY6MdEva9j5YLtU0maKbP4wvLUBw-Q/viewform" target="_blank" rel="noopener">here</a>. (Note: Right click on link to open a new tab).
 
-<img src="images/program.PNG">
+# Link to Google Sheets
 
 # Features
-* The player can select grid size.
-* The program warns the player if the input is invalid, and also if their input is off grid.
-* The player inputs their name which is updated to a google sheet.
-* Messages to the player are personalised with their name.
-* The player is told what number player they are (information is obtained from the google sheet).
-* Once all bombs are used the player can see where the ship was.
-#### Future possible features
-* Increased number ships depending on the grid size selected.
-* Increased number of tries based on grid size.
-* Option to play again once all tries used.
-* Keep track of scores per player.
+## Google Form (for user)
+* The Google Form should be found as a link on the bike shop's (hypothetical) website.
+* The form consists of basic contact information, then options to book bikes.
+* There is a choice of bike type, and the rider should input their height to allow the correct bike size to be matched to them. 
+
+<img src ="assets/images/hire_form_1.JPG">
+<img src ="assets/images/hire_form_2.JPG">
+
+## Google Sheets (for website owner)
+* The Google Sheets is the main library for data for the system.  
+* It hosts a list of the bikes available, along with the sizes, price per day etc.
+* It also assigns each bike a 'bike index' which is frequently used in the system as a reference for each bike.
+* It also displays a basic calendar for the website owner to see calendar availablility, or update the available bikes list when bikes are sold, or new bikes bought in. 
+
+<img src ="assets/images/bike_available.JPG">
+<img src ="assets/images/bike_calendar.JPG">
+
+## Confirmation emails (for both user and owner)
+
+
+
+<img src = "assets/images/process_flow.JPG">
+
+## Future possible features
+* There should be a website whereby the user can access the form. On this website could be a calendar, where users can see which bikes are and are not available on the dates they wish to hire.  This would be automatically updated by the system to block out dates when no longer available. 
+
+For example, see similar booking system idea here for a campervan rental site:
+
+<img src = "assets/images/availability_calendar_idea.JPG">
+
 
 [Back to Table of Contents](https://github.com/Michelle3334/battleships#table-of-contents)
+
+
 
 # Technologies Used:
 ### Programming Languages:
@@ -55,6 +76,10 @@ The app can be found <a href="https://battleships-py.herokuapp.com/" target="_bl
 # Development
 * In order to access google sheets I needed to import the gspread module and credentials from the google.oauth2.service_account.
 * I wanted the battleship to be placed randomly on the game board, so for that functionality I imported the random library.
+
+# Limitations
+## Number of bikes available for hire
+There had to be a limit to how many bikes which could be hired, therefore this was limited to 5 bikes per form.  In the author's experience from running a similar business, generally larger bookings should be handled differently.
  
 # Testing
 ## Functionality testing

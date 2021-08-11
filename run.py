@@ -33,11 +33,22 @@ bikes_dictionary = []
 num_req_bikes = ""
 unavailable_bikes = []
 hire_dates_requested = []
+dates_filled_in_previous = sort_data(1,1)
 
 
-def stop_running():
-    print("STOP!!")
-    raise SystemExit()
+# def stop_running():
+#     print("STOP!!")
+#     raise SystemExit()
+
+def check_entries():
+    """
+    Perform number of checks on data entered into spreadsheet
+    to ensure quality of info and no duplicate bookings
+    """
+    dates_filled_in_now = sort_data(1,1)
+    print(dates_filled_in_now)
+    print(dates_filled_in_previous)
+    
 
 
 def get_latest_response():
@@ -117,7 +128,7 @@ def match_price(bikes_dictionary):
     """
    
     if len(booked_bikes) == 5:
-        stop_running()
+        raise SystemExit()
 
     print(f"Unavailable bikes: {unavailable_bikes}")
     print(booked_bikes)
@@ -313,6 +324,7 @@ def book_bikes(bikes_dictionary):
                 bikes_dictionary[j]['status'] = "Booked"
                 # print(f"Bike index {choose_bike_index} booked!")
                 bikes_dictionary[j]['booked_bike'] = choose_bike_index
+                bikes_dictionary[j]['dates_of_hire'] = hire_dates_requested
                 unavailable_bikes.append(choose_bike_index)
                 booked_bikes.append(bikes_dictionary[j])
 
@@ -337,6 +349,7 @@ def book_bikes(bikes_dictionary):
                 bikes_dictionary[j]['status'] = "Booked"
                 # print(f"Bike index {choose_bike_index} booked!")
                 bikes_dictionary[j]['booked_bike'] = choose_bike_index
+                bikes_dictionary[j]['dates_of_hire'] = hire_dates_requested
                 unavailable_bikes.append(choose_bike_index)
                 booked_bikes.append(bikes_dictionary[j])
 
@@ -426,3 +439,4 @@ get_latest_response()
 # print(f"Number of bikes booked: {len(booked_bikes)}")
 
 # num_dates_check_end = sort_data[1][1]
+
