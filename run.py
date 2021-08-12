@@ -417,6 +417,8 @@ def booked_or_not(bikes_dictionary):
     call up find_alternatives
     """
 
+    still_looking = ["ITERATION"]
+
     # for all bikes dictionaries
     for j in range(len(bikes_dictionary)):
 
@@ -436,7 +438,12 @@ def booked_or_not(bikes_dictionary):
     # to perform the iteration again for only these bikes
     else:
         bikes_dictionary = copy.copy(not_booked_bikes)
+        still_looking.append("ITERATION")
         print("STILL LOOKING")
+
+        # print(still_looking)
+        # print(len(still_looking))
+
         if responses_list[-1][17] == "Yes":
             find_alternatives(bikes_dictionary)
         else:
@@ -446,27 +453,58 @@ def booked_or_not(bikes_dictionary):
         
 
 def check_double_bookings():
+
+    # re-collect updated number from spreadsheet
+    # (number counts num of cells filled in in calendar)
     sort_data2 = SHEET.worksheet('sort_data').get_all_values()
     dates_filled_in_now = sort_data2[1][1]
-    #print(dates_filled_in_now)
 
+    # count how many dates have been filled in for this form
     num_dates_calendar = int(dates_filled_in_now) - int(dates_filled_in_previous)
+
+    # count how many dates should have been filled in
     num_dates_booked = num_req_bikes*len(hire_dates_requested)
 
+    # check that these two numbers match
     if num_dates_booked != num_dates_calendar:
         print("PROBLEM")
     else:
         print("YAY IT MATCHES")
-    
 
 
 get_latest_response()
 
 #pprint(booked_bikes)
 
-# print(f"Unavailable bikes: {unavailable_bikes}")
+### USER EMAIL
 
-# print(f"Number of bikes booked: {len(booked_bikes)}")
+# Hello {name}
 
-# num_dates_check_end = sort_data[1][1]
+# Thanks for looking to us for hiring bikes. 
+
+# We've managed to book the following bikes for you:
+
+
+# And we found these alternatives for ones we couldn't match up entirely:
+
+
+# These have now been booked into the calendar.  Please let us know if you need this booking amended.
+
+# The price for this hire is displayed below.  You can call up on XXXXX to pay, or bring cash/card on the first date of hire:
+
+# For more information on what you may need to bring for hire, please see XXXXX on the website. 
+
+# See you promptly on {date}
+
+# Kind regards
+# Progression Bikes team
+
+### OWNER EMAIL
+
+# The following bikes have been booked for dates {dates}
+
+# > 
+# > 
+# > 
+# > 
 
