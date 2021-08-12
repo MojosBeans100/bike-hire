@@ -422,6 +422,7 @@ def booked_or_not(bikes_dictionary):
         # if the status does not equal Booked, they are
         # NOT booked, so append them to not_booked_bikes list
         if bikes_dictionary[j]['status'] != "Booked":
+            bikes_dictionary[j]['comments'] = "Found alternative"
             not_booked_bikes.append(bikes_dictionary[j])
 
     if len(booked_bikes) == num_req_bikes:
@@ -433,7 +434,13 @@ def booked_or_not(bikes_dictionary):
     else:
         bikes_dictionary = copy.copy(not_booked_bikes)
         print("STILL LOOKING")
-        find_alternatives(bikes_dictionary)
+        if responses_list[-1][17] == "Yes":
+            print(responses_list[-1][17])
+            find_alternatives(bikes_dictionary)
+        else:
+            print(f"Bikes found:  {len(booked_bikes)}")
+            print(f"Bikes not found:  {len(not_booked_bikes)}")
+            print("User does not want alternatives")
         
 
     
@@ -441,7 +448,7 @@ def booked_or_not(bikes_dictionary):
 
 get_latest_response()
 
-pprint(booked_bikes)
+#pprint(booked_bikes)
 
 # print(f"Unavailable bikes: {unavailable_bikes}")
 
