@@ -33,7 +33,8 @@ bikes_dictionary = []
 #num_req_bikes = ""
 unavailable_bikes = []
 hire_dates_requested = []
-#dates_filled_in_previous = sort_data(1,1)
+dates_filled_in_previous = sort_data[1][1]
+print(dates_filled_in_previous)
 
 
 # def stop_running():
@@ -427,6 +428,8 @@ def booked_or_not(bikes_dictionary):
 
     if len(booked_bikes) == num_req_bikes:
         print("ALL BIKES FOUND")
+        check_double_bookings()
+        #
 
     # if not all bikes have been booked
     # re-assign the bike dictionary to not_booked_bikes
@@ -435,7 +438,6 @@ def booked_or_not(bikes_dictionary):
         bikes_dictionary = copy.copy(not_booked_bikes)
         print("STILL LOOKING")
         if responses_list[-1][17] == "Yes":
-            print(responses_list[-1][17])
             find_alternatives(bikes_dictionary)
         else:
             print(f"Bikes found:  {len(booked_bikes)}")
@@ -443,6 +445,18 @@ def booked_or_not(bikes_dictionary):
             print("User does not want alternatives")
         
 
+def check_double_bookings():
+    sort_data2 = SHEET.worksheet('sort_data').get_all_values()
+    dates_filled_in_now = sort_data2[1][1]
+    #print(dates_filled_in_now)
+
+    num_dates_calendar = int(dates_filled_in_now) - int(dates_filled_in_previous)
+    num_dates_booked = num_req_bikes*len(hire_dates_requested)
+
+    if num_dates_booked != num_dates_calendar:
+        print("PROBLEM")
+    else:
+        print("YAY IT MATCHES")
     
 
 
