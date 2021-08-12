@@ -453,7 +453,12 @@ def booked_or_not(bikes_dictionary):
         
 
 def check_double_bookings():
+    """
+    Perform a couple of calculations to ensure there
+    are no double bookings
+    """
 
+    ## FIRST CHECK
     # re-collect updated number from spreadsheet
     # (number counts num of cells filled in in calendar)
     sort_data2 = SHEET.worksheet('sort_data').get_all_values()
@@ -471,6 +476,24 @@ def check_double_bookings():
     else:
         print("YAY IT MATCHES")
 
+    ## SECOND CHECK
+    # check whether there are two dates the same in 
+    # dates appended to bike indexes in calendar i.e. 
+    # a bike has been double booked
+
+    # for number of bikes in calendar
+    for i in range(len(calendar)):
+
+        # iterate through range of dates appended to that bike index
+        for j in range(len(calendar[i])):
+
+            # if that date appears more than once in this list of dates
+            if calendar[i].count(calendar[i][j]) > 1 and calendar[i][j] != "":
+
+                # raise an error
+                print("PROBLEM")
+
+
 
 get_latest_response()
 
@@ -486,6 +509,8 @@ get_latest_response()
 
 
 # And we found these alternatives for ones we couldn't match up entirely:
+
+# We could not find any bikes suitable for:
 
 
 # These have now been booked into the calendar.  Please let us know if you need this booking amended.
