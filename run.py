@@ -30,24 +30,24 @@ gs_size_guide = SHEET.worksheet('size_guide').get_all_values()
 booked_bikes = []
 not_booked_bikes = []
 bikes_dictionary = []
-num_req_bikes = ""
+#num_req_bikes = ""
 unavailable_bikes = []
 hire_dates_requested = []
-dates_filled_in_previous = sort_data(1,1)
+#dates_filled_in_previous = sort_data(1,1)
 
 
 # def stop_running():
 #     print("STOP!!")
-#     raise SystemExit()
+    #raise SystemExit()
 
-def check_entries():
-    """
-    Perform number of checks on data entered into spreadsheet
-    to ensure quality of info and no duplicate bookings
-    """
-    dates_filled_in_now = sort_data(1,1)
-    print(dates_filled_in_now)
-    print(dates_filled_in_previous)
+# def check_entries():
+#     """
+#     Perform number of checks on data entered into spreadsheet
+#     to ensure quality of info and no duplicate bookings
+#     """
+#     dates_filled_in_now = sort_data(1,1)
+#     print(dates_filled_in_now)
+#     print(dates_filled_in_previous)
     
 
 
@@ -92,6 +92,7 @@ def get_latest_response():
         }
         bikes_dictionary.append(d)
 
+    global num_req_bikes
     num_req_bikes = len(bikes_dictionary)
     print(f"Num req bikes = {num_req_bikes}")
 
@@ -126,14 +127,19 @@ def match_price(bikes_dictionary):
     Fetch the price per day based on the bike type selected
     and append to dictionary
     """
-   
-    if len(booked_bikes) == 5:
-        raise SystemExit()
 
-    print(f"Unavailable bikes: {unavailable_bikes}")
-    print(booked_bikes)
+    # print(f"Unavailable bikes: {unavailable_bikes}")
+    
+    # print(f"Length of booked bikes {len(booked_bikes)}")
+    # print(f"Num req bikes {num_req_bikes}")
+   
+    # if len(booked_bikes) == num_req_bikes:
+    #     print(booked_bikes)
+    #     stop_running()
+
+    
     #print(f"Num iterations: {num_iterations}")
-    time.sleep(10)
+    #time.sleep(10)
 
     # iterate through list of bikes dictionaries (max 5)
     for i in range(len(bikes_dictionary)):
@@ -159,7 +165,7 @@ def find_unavailable_bikes():
     users_start_date = responses_list[-1][5]
 
     # put date in readable format
-    start_date = datetime.strptime(users_start_date, "%Y-%m-%d")
+    start_date = datetime.strptime(users_start_date, "%m/%d/%Y")
 
     # calculate end date based on the hire duration
     delta = timedelta(days=int(responses_list[-1][6]) - 1)
@@ -171,7 +177,7 @@ def find_unavailable_bikes():
     # only do this ONCE
     if len(hire_dates_requested) == 0:
         while start_date <= end_date:
-            hire_dates_requested.append(start_date.strftime("%Y-%m-%d"))
+            hire_dates_requested.append(start_date.strftime("%m/%d/%Y"))
             start_date += delta_day
 
     # for each date in the requested hire period
@@ -190,10 +196,10 @@ def find_unavailable_bikes():
                     # if not calendar[i][0] in unavailable_bikes:
                     unavailable_bikes.append(calendar[i][0])
 
-    print("Find unavailable bikes sleep")
-    print(f"Unavailable bikes: {unavailable_bikes}")
-    print(f"Hire dates req: {hire_dates_requested}")
-    time.sleep(10)
+    # print("Find unavailable bikes sleep")
+    # print(f"Unavailable bikes: {unavailable_bikes}")
+    # print(f"Hire dates req: {hire_dates_requested}")
+    # time.sleep(10)
 
     match_suitable_bikes(bikes_dictionary)
 
@@ -322,7 +328,7 @@ def book_bikes(bikes_dictionary):
                 # index to unavailable_bikes list, add this bike dict to
                 # booked_bikes list
                 bikes_dictionary[j]['status'] = "Booked"
-                # print(f"Bike index {choose_bike_index} booked!")
+                bikes_dictionary[j]['comments'] = ""
                 bikes_dictionary[j]['booked_bike'] = choose_bike_index
                 bikes_dictionary[j]['dates_of_hire'] = hire_dates_requested
                 unavailable_bikes.append(choose_bike_index)
@@ -346,8 +352,9 @@ def book_bikes(bikes_dictionary):
                 # run function with this bike index
                 book_bikes_to_calendar(choose_bike_index)
 
+                
                 bikes_dictionary[j]['status'] = "Booked"
-                # print(f"Bike index {choose_bike_index} booked!")
+                bikes_dictionary[j]['comments'] = ""
                 bikes_dictionary[j]['booked_bike'] = choose_bike_index
                 bikes_dictionary[j]['dates_of_hire'] = hire_dates_requested
                 unavailable_bikes.append(choose_bike_index)
@@ -418,21 +425,23 @@ def booked_or_not(bikes_dictionary):
             not_booked_bikes.append(bikes_dictionary[j])
 
     if len(booked_bikes) == num_req_bikes:
-        return
+        print("ALL BIKES FOUND")
 
     # if not all bikes have been booked
     # re-assign the bike dictionary to not_booked_bikes
     # to perform the iteration again for only these bikes
     else:
         bikes_dictionary = copy.copy(not_booked_bikes)
+        print("STILL LOOKING")
         find_alternatives(bikes_dictionary)
+        
 
-    return
+    
 
 
 get_latest_response()
 
-# pprint(bikes_dictionary)
+pprint(booked_bikes)
 
 # print(f"Unavailable bikes: {unavailable_bikes}")
 
