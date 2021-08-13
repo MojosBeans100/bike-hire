@@ -121,19 +121,6 @@ def match_price(bikes_dictionary):
     and append to dictionary
     """
 
-    # print(f"Unavailable bikes: {unavailable_bikes}")
-    
-    # print(f"Length of booked bikes {len(booked_bikes)}")
-    # print(f"Num req bikes {num_req_bikes}")
-   
-    # if len(booked_bikes) == num_req_bikes:
-    #     print(booked_bikes)
-    #     stop_running()
-
-    
-    #print(f"Num iterations: {num_iterations}")
-    #time.sleep(10)
-
     # iterate through list of bikes dictionaries (max 5)
     for i in range(len(bikes_dictionary)):
 
@@ -189,10 +176,19 @@ def find_unavailable_bikes():
                     # if not calendar[i][0] in unavailable_bikes:
                     unavailable_bikes.append(calendar[i][0])
 
-    # print("Find unavailable bikes sleep")
-    # print(f"Unavailable bikes: {unavailable_bikes}")
-    # print(f"Hire dates req: {hire_dates_requested}")
-    # time.sleep(10)
+    # also look for blanket unavailability in bikes list
+    # only do this ONCE
+    if len(booked_bikes) == 0:
+
+        # for each bike in bikes list
+        for q in range(len(bikes_list)):
+
+            # if Available? is No, append bike index to unavailable_bikes
+            if bikes_list[q][6] == "No":
+                unavailable_bikes.append(bikes_list[q][0])
+
+
+    print(unavailable_bikes)
 
     match_suitable_bikes(bikes_dictionary)
 
@@ -277,25 +273,23 @@ def book_bikes_to_calendar(choose_bike_index):
                 # overwriting the same cell
                 last_date_in_row += 1
 
+
+    # for all bike indexes
     for x in range(len(calendar2)):
-    #print(x)
-    #print(type(calendar2[x][0]))
-    #print(calendar2[x][0])
-    
-        # print("YAY")
         
+        # and for all dates listed in the calendar
         for z in range(len(calendar2[0])):
 
+            # and for all hire dates requested
             for w in range(len(hire_dates_requested)):
-            #print(z)
-            #print(calendar2[2][z])
+            
+                # match up the chosen bike index against the date
                 if (calendar2[x][0]) == str(choose_bike_index) and calendar2[2][z] == hire_dates_requested[w]:
-                    #print(bike_ind)
-                    #print(x)
-                    #print(z)
-                    update_calendar2.update_cell(x,z,"BOOKED")
+                    
+                    # and write the booking number into that cell
+                    update_calendar2.update_cell(x,z,bikes_dictionary[0]['booking_number'])
 
-        # if calendar2[x][0] == bike_ind:
+    
 
 
 def book_bikes(bikes_dictionary):
