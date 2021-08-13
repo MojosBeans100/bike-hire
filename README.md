@@ -143,13 +143,9 @@ The project was then deployed to Heroku using the following steps:
 5. Manually deploy the project (I used the manual deploy option in order to control what version was deployed to the live environment).
 
 # Credits
-* The code for the structure of the game board was adapted from the below example (right click to open in new tab).
-https://codereview.stackexchange.com/questions/122970/python-simple-battleship-game
-* Stackoverflow was great resource for answering questions I had. 
+* https://mailtrap.io/blog/sending-emails-in-python-tutorial-with-code-examples/
 
 # Acknowledgements
-* CSN tutors for their quick assistance.
-* My mentor for support, advice and feedback.
-* My friends and family for their support, feedback and user testing.
+* 
 
 [Back to Table of Contents](https://github.com/Michelle3334/battleships#table-of-contents)
