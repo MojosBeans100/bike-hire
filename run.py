@@ -92,6 +92,8 @@ def get_latest_response():
             'status': "Not booked",
             'comments': "",
             'booked_bike': "",
+            'booked_bike_brand' : "",
+            'booked_bike_desc': "",
         }
         bikes_dictionary.append(d)
 
@@ -155,7 +157,7 @@ def match_price(bikes_dictionary):
     print(bikes_dictionary)
     print(booked_bikes)
     print("MATCH PRICE SLEEP")
-    time.sleep(10)
+    #time.sleep(10)
 
     # iterate through list of bikes dictionaries (max 5)
     for i in range(len(bikes_dictionary)):
@@ -250,7 +252,7 @@ def match_suitable_bikes(bikes_dictionary):
 
     print("MATCHES SLEEP")
     pprint(bikes_dictionary)
-    time.sleep(5)
+    #time.sleep(5)
     
     check_availability(bikes_dictionary)
     book_bikes(bikes_dictionary)
@@ -324,13 +326,11 @@ def book_bikes_to_calendar(choose_bike_index):
             for w in range(len(hire_dates_requested)):
 
                 # match up the chosen bike index against the date
-                if (calendar2[x][0]) == str(choose_bike_index) and calendar2[2][z] == hire_dates_requested[w]:
+                # ensure cell is blank and we are not overwriting another date
+                if (calendar2[x][0]) == str(choose_bike_index) and calendar2[2][z] == hire_dates_requested[w] and calendar2[x][z] == "":
 
                     # and write the booking number into that cell
-                    print(x+1)
-                    print(z+1)
                     update_calendar2.update_cell(x+1,z+1,bikes_dictionary[0]['booking_number'])
-
 
 
 def book_bikes(bikes_dictionary):
@@ -351,13 +351,10 @@ def book_bikes(bikes_dictionary):
         if bikes_dictionary[j]['status'] != "Booked":
 
             # if the possible matches list is empty, move onto next j value
-            # also add a comment and append this 
-            # bike dictionary to not_booked_bikes 
+            # also add a comment
             if len(bikes_dictionary[j]['possible_matches']) == 0:
 
                 bikes_dictionary[j]['comments'] = "No bikes available"
-                # not_booked_bikes.append(bikes_dictionary[j])
-
                 continue
 
             # if the possible matches list = 1, then there is only 1 choice
@@ -386,7 +383,6 @@ def book_bikes(bikes_dictionary):
 
                 # re-run check_availability to remove this bike index from
                 # other bike dicts
-                # print(f"Re-checking availability")
                 check_availability(bikes_dictionary)
 
             # if there is more than 1 bike available
@@ -399,7 +395,9 @@ def book_bikes(bikes_dictionary):
                 # run function with this bike index
                 book_bikes_to_calendar(choose_bike_index)
 
-                
+                # change status, update this bike dictionary, add bike
+                # index to unavailable_bikes list, add this bike dict to
+                # booked_bikes list
                 bikes_dictionary[j]['status'] = "Booked"
                 bikes_dictionary[j]['comments'] = ""
                 bikes_dictionary[j]['booked_bike'] = choose_bike_index
@@ -504,20 +502,47 @@ def booked_or_not(bikes_dictionary):
 
 def calculate_cost():
     """
-    This functions calculates the total cost of 
+    This functions calculates the total cost of
     bike hire
     """
     bike_costs = []
     price = ""
 
+    # for all bikes in booked list
     for i in range(len(booked_bikes)):
        
-
+        # multiple price per day * number of hire days
         bike_costs.append(int(booked_bikes[i]['price_per_day']) * len(hire_dates_requested))
 
     total_cost = sum(bike_costs)  
     print(total_cost)
     print(bike_costs)
+
+    bike_user_details()
+
+
+def bike_user_details():
+    """
+    Now we know details of the booked bikes, 
+    collect last information about chosen bikes
+    """
+
+    # iterate through list of bikes dictionaries
+    for i in range(len(booked_bikes)):
+        #print(f"i = {i}")
+
+        # iterate through gs_bikes_list
+        for j in range(len(bikes_list)):
+            #print(f"j = {j}")
+
+            #print(bikes_list[0][j])
+            # if the booked bike index in the gs_bikes_list is same as that of the
+            # dictionary, index the relevant brand and descr
+            # and append to the dictionary
+            if (bikes_list[j][0]) == booked_bikes[i]['booked_bike']:
+                booked_bikes[i]['booked_bike_brand'] = bikes_list[j][1]
+                booked_bikes[i]['booked_bike_desc'] = bikes_list[j][2]
+
 
 
 
@@ -564,9 +589,36 @@ def check_double_bookings():
     calculate_cost()
 
 
+# def booking_details():
+#     """
+#     This function organises the text to be sent
+#     in an email to user and owner to confirm booking
+#     """
 
+#     user_email_subject = ""
+#     user_email_welcome = ""
+#     email_booking_details = ""
+#     email_booked_bikes = ""
+
+#     if len(hire_dates_requested) > 1:
+#         user_email_subject = (f"Bike hire {hire_dates_requested[0]} - {hire_dates_requested[-1]}")
+#     else:
+#         user_email_subject = (f"Bike hire {hire_dates_requested[0]}")
+
+#     user_email_welcome = f"Hello {responses_list[-1][1].split(' ', 1)[0]}. Thank you for booking with us. Below are your booking details:"
+
+#     email_booking_details = f"Booking name:  {responses_list[-1]} '\n'    Dates of hire:  {hire_dates_requested}  '\n' Number of bikes: {len(booked_bikes)}"
+
+#     email_booked_bikes = (f"")
 
 get_latest_response()
+
+pprint(booked_bikes)
+
+
+
+
+
 
 # message = f"""\
 # Subject: Hi Mailtrap

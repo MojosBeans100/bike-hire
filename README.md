@@ -115,14 +115,19 @@ There had to be a limit to how many bikes which could be hired, therefore this w
 
 ### Error checking
 One of the most important aspects of a booking system is to ensure no double bookings occur.  For this reason, a number of error-checking measures are provided in the code. 
-* The shop owner has the ability to choose a blanket availability to each bike index.  This allows for, for example,  mechanical problems with bikes thus rendering them unbookable for a few days, or the bike is sold and no longer present in the hire fleet. 
+* The shop owner has the ability to choose a blanket availability to each bike index.  This allows for, for example,  mechanical problems with bikes thus rendering them unbookable for a few days, or the bike is sold and no longer present in the hire fleet.  
 * The code checks the dates in the calendar and returns unavailable bikes for those dates.
 * If a bike is booked, the code removes that bike index from all other bike dictionaries, and appends it to the unavailble bikes list. 
 * The code checks and re-checks bikes availability each time the code is run. 
 
-
 With all these measures, it should not be possible to double book a bike. 
 
+* To add new bikes bought into the shop, the owner can simply add the bike to the bottom of the bikes list, with a new bike index.  This again ensures no confusion with double booking other bikes. 
+
+* Maintenance
+Calendar updates
+
+* Manual booking
 
 # Deployment
 The project was deployed to GitHub Pages using the following steps, I used Gitpod as a development environment where I commited all changes to git version control system. I used the push command in Gitpod to save changes into GitHub:
