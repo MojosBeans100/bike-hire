@@ -1,5 +1,7 @@
 # Bike Hire System
 
+## add comment about running of file
+
 ## Portfolio Project 3 - Python Essentials
 
 The purpose of this project was to create a booking system whereby users can submit a Google form to enquire about bike hire, and if there are bikes available, the system will book these bikes out against a calendar, and send a confirmation email to both the user and shop owner. 
@@ -26,8 +28,8 @@ The Google Form can be found <a href="https://docs.google.com/forms/d/e/1FAIpQLS
 * There is a choice of bike type, and the rider should input their height to allow the correct bike size to be matched to them.
 * Once submitted, the information from the form is pushed to the Google Sheets database. 
 
-<img src ="assets/images/hire_form_1.JPG">
-<img src ="assets/images/hire_form_2.JPG">
+![Hire Form 1](assets/images/hire_form_1.JPG)  
+![Hire Form 2](assets/images/hire_form_2.JPG)
 
 ## Google Sheets (for website owner)
 * The Google Sheets is the main library for data for the system.  
@@ -51,18 +53,23 @@ The Google Form can be found <a href="https://docs.google.com/forms/d/e/1FAIpQLS
 
 6. There is another availability checking function (function: check_availability) to remove any bikes from the list of unavailable bikes from any bike dictionaries that bike index appears in.  Therefore it should not be possible to 'book' this bike again. 
 
-7. It then iterates through the list of possible bikes for each bike dictionary (function: book_bikes), chooses one of the bike indexes, and calls up another (function: book_bikes_to_calendar) which writes the requested hire dates in the calendar against the chosen bike index.
+7. It then iterates through the list of possible bikes for each bike dictionary (function: book_bikes), chooses one of the bike indexes, and calls up another function (function: book_bikes_to_calendar) which writes the requested hire dates in the calendar against the chosen bike index.
 
 8. It then separates the list of bike dictionaries into two separate ones, one for booked bikes, and one for bikes which could not be booked on that iteration (function: booked_or_not). 
  
 9. If there are any bikes which could not be booked, it then looks for alternatives by changing the bike type.  It is more important for the rider to be riding a bike of the correct size, but manageable to provide them with a different bike type if they wish (function: find_alternatives).  This then repeats steps 3 - 9.
 
+See the process flow below:
+
+<img src = "assets/images/process_flow.JPG">
+
+[Back to Table of contents](#table-of-contents)
 
 ## Confirmation emails (for both user and owner)
 
 
 
-<img src = "assets/images/process_flow.JPG">
+
 
 ## Future possible features
 * There should be a website whereby the user can access the form. On this website could be a calendar, where users can see which bikes are and are not available on the dates they wish to hire.  This would be automatically updated by the system to block out dates when no longer available. 
@@ -72,25 +79,28 @@ For example, see similar booking system idea here for a campervan rental site:
 <img src = "assets/images/availability_calendar_idea.JPG">
 
 
-[Back to Table of Contents](https://github.com/Michelle3334/battleships#table-of-contents)
+
 
 
 
 # Technologies Used:
 ### Programming Languages:
 * Python
+
 ### Git
 * Git was used for version control by utilizing the Gitpod terminal to commit to Git and Push to GitHub.
+
 ### Github
 * GitHub is used to store the projects code after being pushed from Git.
+
 ### Lucidchart
 * Lucidchart was used to map the workflow for the game.
-<img src="images/workflow.PNG">
 
 ### Code Institutes mock terminal
 * Code Institute provided a mock terminal for use for the project.
+
 ### Google Sheets
-* Google Sheets was used to store the player names. The link to the sheet can be found <a href="https://docs.google.com/spreadsheets/d/1OPAWWCRL8g2KF1MZQvM3CO5YMLDQ9V1aOPwTJgWPhGc/edit#gid=0" target="_blank" rel="noopener">here</a>. (Note: Right click on link to open a new tab).
+* Google Sheets was used to store the bikes information. The link to the sheet can be found <a href=# target="_blank" rel="noopener">here</a>. (Note: Right click on link to open a new tab).
 
 [Back to Table of Contents](https://github.com/Michelle3334/battleships#table-of-contents)
 
