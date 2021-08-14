@@ -47,6 +47,7 @@ not_booked_bikes = []
 bikes_dictionary = []
 unavailable_bikes = []
 bike_costs = []
+total_cost = ""
 hire_dates_requested = []
 dates_filled_in_previous = sort_data[1][1]
 sender = "bike_shop_owner@gmail.com"
@@ -62,8 +63,6 @@ def error_func(this_error):
     print("The process will stop.")
 
     raise SystemExit
-
-
 
 
 def get_latest_response():
@@ -94,7 +93,8 @@ def get_latest_response():
                          (last_response[16])]
 
     global booking_number
-    booking_number = last_response[18]
+    booking_number = sort_data[-1][2]
+    print(booking_number)
 
     # max bikes hired = 5, but remove empty values from list
     types_list = list(filter(None, types_list_orig))
@@ -297,6 +297,9 @@ def check_availability(bikes_dictionary):
                 # that date
                 (bikes_dictionary[j]['possible_matches']).\
                     remove(unavailable_bikes[k])
+
+    pprint(bikes_dictionary)
+
 
 
 def book_bikes_to_calendar(choose_bike_index):
@@ -519,6 +522,7 @@ def booked_or_not(bikes_dictionary):
         print(f"Bikes found:  {len(booked_bikes)}")
         print(f"Bikes not found:  {len(not_booked_bikes)}")
         print("User does not want alternatives")
+        check_double_bookings()
 
 
 def booking_details():
@@ -530,10 +534,33 @@ def booking_details():
     global user_email_subject
     user_email_subject = ""
 
+    # create string for hire dates
     if len(hire_dates_requested) > 1:
-        user_email_subject = {hire_dates_requested[0]} - {hire_dates_requested[-1]}
+        user_email_subject = f"{hire_dates_requested[0]} - {hire_dates_requested[-1]}"
     else:
         user_email_subject = {hire_dates_requested[0]}
+
+    email_bike = ""
+    email_bikes_booked = ""
+    bike_5 = ""
+
+    print(len(booked_bikes))
+
+    for i in range(len(booked_bikes)):
+
+        bike_5 = f"Bike {i+1}\n" \
+                  f"Brand:          {booked_bikes[i]['booked_bike_brand']}\n" \
+                  f"Description:    {booked_bikes[i]['booked_bike_desc']}\n" \
+                  f"Type:           {booked_bikes[i]['bike_type']}\n" \
+                  f"Rider height:   {booked_bikes[i]['user_height']}\n" \
+                  f"Bike size:      {booked_bikes[i]['bike_size']}\n" \
+                  f"Price per day:  {booked_bikes[i]['price_per_day']}\n" \
+                  f"Total price for {len(hire_dates_requested)} days = {bike_costs[i]}\n" \
+                  '\n'
+
+        email_bike += bike_5
+
+    print(email_bike)
 
 
 def calculate_cost():
@@ -591,7 +618,7 @@ def check_double_bookings():
         int(dates_filled_in_previous)
 
     # count how many dates should have been filled in
-    num_dates_booked = num_req_bikes*len(hire_dates_requested)
+    num_dates_booked = len(booked_bikes)*len(hire_dates_requested)
 
     # check that these two numbers match
     if num_dates_booked != num_dates_calendar:
@@ -624,108 +651,109 @@ def check_double_bookings():
 get_latest_response()
 
 
-print(bike_costs)
+# print(bike_costs)
 
 
-# pprint(booked_bikes)
+# # pprint(booked_bikes)
 
-# MESSAGE TO USER
-message = f"""\
-Subject: Bike hire booking confirmed {user_email_subject}
-To: {receiver}
-From: {sender}
+# # MESSAGE TO USER
+# message = f"""\
+# Subject: Bike hire booking confirmed {user_email_subject}
+# To: {receiver}
+# From: {sender}
 
-Hello {responses_list[-1][1].split(' ', 1)[0]}!
+# Hello {responses_list[-1][1].split(' ', 1)[0]}!
 
-Thank you for booking with us.  Below are your booking details:
+# Thank you for booking with us.  Below are your booking details:
 
-Booking name: {responses_list[-1][1]}
-Booking date(s): {user_email_subject}
-Number of bikes: {len(booked_bikes)}
+# Booking name:               {responses_list[-1][1]}
+# Booking date(s):            {user_email_subject}
+# Number of bikes:            {len(booked_bikes)}
+# Number of bikes not booked: {len(not_booked_bikes)}
 
-Bike 1:
-Brand:          {booked_bikes[0]['booked_bike_brand']}
-Description:    {booked_bikes[0]['booked_bike_desc']}
-Type:           {booked_bikes[0]['bike_type']}
-Rider height:   {booked_bikes[0]['user_height']}
-Bike size:      {booked_bikes[0]['bike_size']}
-Price per day:  {booked_bikes[0]['price_per_day']}
-Total price for {len(hire_dates_requested)} days = {bike_costs[0]}
+# Bike 1:
+# Brand:          {booked_bikes[0]['booked_bike_brand']}
+# Description:    {booked_bikes[0]['booked_bike_desc']}
+# Type:           {booked_bikes[0]['bike_type']}
+# Rider height:   {booked_bikes[0]['user_height']}
+# Bike size:      {booked_bikes[0]['bike_size']}
+# Price per day:  {booked_bikes[0]['price_per_day']}
+# Total price for {len(hire_dates_requested)} days = {bike_costs[0]}
 
-Bike 2:
-Brand:          {booked_bikes[1]['booked_bike_brand']}
-Description:    {booked_bikes[1]['booked_bike_desc']}
-Type:           {booked_bikes[1]['bike_type']}
-Rider height:   {booked_bikes[1]['user_height']}
-Bike size:      {booked_bikes[1]['bike_size']}
-Price per day:  {booked_bikes[1]['price_per_day']}
-Total price for {len(hire_dates_requested)} days = {bike_costs[1]}
+# Bike 2:
+# Brand:          {booked_bikes[1]['booked_bike_brand']}
+# Description:    {booked_bikes[1]['booked_bike_desc']}
+# Type:           {booked_bikes[1]['bike_type']}
+# Rider height:   {booked_bikes[1]['user_height']}
+# Bike size:      {booked_bikes[1]['bike_size']}
+# Price per day:  {booked_bikes[1]['price_per_day']}
+# Total price for {len(hire_dates_requested)} days = {bike_costs[1]}
 
-Total amount payable: {total_cost}
+# Total amount payable: {total_cost}
 
-Important Information:
-Time out:  9am on first day of hire
-Time due back:  4.45pm on last day of hire
+# Important Information:
+# Time out:  9am on first day of hire
+# Time due back:  4.45pm on last day of hire
 
-Terms of Hire:
-
-
-Payment:
-
-Want to amend your booking?
-Please call or email
-
-"""
-
-try:
-    # send your message with credentials specified above
-    with smtplib.SMTP(smtp_server, port) as server:
-        server.login(login, password)
-        server.sendmail(sender, receiver, message)
-
-    # tell the script to report if your message was sent or which errors
-    # need to be fixed
-    print('Sent')
-except (gaierror, ConnectionRefusedError):
-    print('Failed to connect to the server. Bad connection settings?')
-except smtplib.SMTPServerDisconnected:
-    print('Failed to connect to the server. Wrong user/password?')
-except smtplib.SMTPException as e:
-    print('SMTP error occurred: ' + str(e))
+# Terms of Hire:
 
 
+# Payment:
 
+# Want to amend your booking?
+# Please call or email
 
+# """
 
-# MESSAGE TO OWNER
-message = f"""\
-Subject: Booking confirmed
-To: {sender}
-From: {sender}
+# try:
+#     # send your message with credentials specified above
+#     with smtplib.SMTP(smtp_server, port) as server:
+#         server.login(login, password)
+#         server.sendmail(sender, receiver, message)
 
-Booking number {booking_number} confirmed.
-
-{booked_bikes}
+#     # tell the script to report if your message was sent or which errors
+#     # need to be fixed
+#     print('Sent')
+# except (gaierror, ConnectionRefusedError):
+#     print('Failed to connect to the server. Bad connection settings?')
+# except smtplib.SMTPServerDisconnected:
+#     print('Failed to connect to the server. Wrong user/password?')
+# except smtplib.SMTPException as e:
+#     print('SMTP error occurred: ' + str(e))
 
 
 
-"""
 
-try:
-    # send your message with credentials specified above
-    with smtplib.SMTP(smtp_server, port) as server:
-        server.login(login, password)
-        server.sendmail(sender, receiver, message)
 
-    # tell the script to report if your message was sent or which
-    # errors need to be fixed
-    print('Sent')
-except (gaierror, ConnectionRefusedError):
-    print('Failed to connect to the server. Bad connection settings?')
-except smtplib.SMTPServerDisconnected:
-    print('Failed to connect to the server. Wrong user/password?')
-except smtplib.SMTPException as e:
-    print('SMTP error occurred: ' + str(e))
+# # MESSAGE TO OWNER
+# message = f"""\
+# Subject: Booking confirmed
+# To: {sender}
+# From: {sender}
+
+# Booking number {booking_number} confirmed.
+
+# {booked_bikes}
+
+
+
+# """
+
+# try:
+#     # send your message with credentials specified above
+#     with smtplib.SMTP(smtp_server, port) as server:
+#         server.login(login, password)
+#         server.sendmail(sender, receiver, message)
+
+#     # tell the script to report if your message was sent or which
+#     # errors need to be fixed
+#     print('Sent')
+# except (gaierror, ConnectionRefusedError):
+#     print('Failed to connect to the server. Bad connection settings?')
+# except smtplib.SMTPServerDisconnected:
+#     print('Failed to connect to the server. Wrong user/password?')
+# except smtplib.SMTPException as e:
+#     print('SMTP error occurred: ' + str(e))
 
 
 
