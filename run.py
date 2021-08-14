@@ -99,35 +99,32 @@ def get_latest_response():
     num_req_bikes = len(bikes_dictionary)
     #print(f"Num req bikes = {num_req_bikes}")
 
-    match_size(bikes_dictionary)
-    #booking_number_occured(bikes_dictionary)
+    #match_size(bikes_dictionary)
+    booking_number_occured(bikes_dictionary)
     
 
-# def booking_number_occured(bikes_dictionary):
-#     """
-#     This function determines if this booking number
-#     has already been run through the booking process
-#     If it has, stop
-#     """
+def booking_number_occured(bikes_dictionary):
+    """
+    This function determines if this booking number
+    has already been run through the booking process
+    If it has, stop
+    """
 
-#     # for all bike indexes in the calendar
-#     for i in range(len(calendar2)):
+    # for all bike indexes in the calendar
+    for i in range(len(calendar2)):
 
-#         # and for all cells in that row
-#         for j in range(len(calendar2[i])):
+        # and for all cells in that row
+        for j in range(len(calendar2[i])):
 
-#             # do not count the first column (ie Bike Index)
-#             if j > 0:
+            # do not count the first column (ie Bike Index)
+            if j > 0:
 
-#                 # look for the booking number
-#                 if str(bikes_dictionary[0]['booking_number']) == calendar2[i][j]:
-#                     print(bikes_dictionary[0]['booking_number'])
-#                     print(i)
-#                     print(j)
-#                     print("This booking has already been completed")
-#                     raise SystemExit
+                # look for the booking number
+                if str(bikes_dictionary[0]['booking_number']) == calendar2[i][j]:
+                    print("This booking has already been completed")
+                    raise SystemExit
 
-#     match_size(bikes_dictionary)
+    match_size(bikes_dictionary)
 
 
 def match_size(bikes_dictionary):
@@ -330,9 +327,9 @@ def book_bikes_to_calendar(choose_bike_index):
                 if (calendar2[x][0]) == str(choose_bike_index) and calendar2[2][z] == hire_dates_requested[w]:
 
                     # and write the booking number into that cell
-                    print(x)
-                    print(z)
-                    update_calendar2.update_cell(x,z,bikes_dictionary[0]['booking_number'])
+                    print(x+1)
+                    print(z+1)
+                    update_calendar2.update_cell(x+1,z+1,bikes_dictionary[0]['booking_number'])
 
 
 
