@@ -46,11 +46,24 @@ booked_bikes = []
 not_booked_bikes = []
 bikes_dictionary = []
 unavailable_bikes = []
+bike_costs = []
 hire_dates_requested = []
 dates_filled_in_previous = sort_data[1][1]
 sender = "bike_shop_owner@gmail.com"
 receiver = responses_list[-1][3]
 owner = "bike_shop_owner@gmail.com"
+
+def error_func(this_error):
+    """
+    This function is called up whenever there is an error
+    It does not allow the booking to go ahead
+    """
+    print(f"The error is {this_error}.")
+    print("The process will stop.")
+
+    raise SystemExit
+
+
 
 
 def get_latest_response():
@@ -162,10 +175,6 @@ def match_price(bikes_dictionary):
     Fetch the price per day based on the bike type selected
     and append to dictionary
     """
-    print(bikes_dictionary)
-    print(booked_bikes)
-    print("MATCH PRICE SLEEP")
-    # time.sleep(10)
 
     # iterate through list of bikes dictionaries (max 5)
     for i in range(len(bikes_dictionary)):
@@ -258,10 +267,6 @@ def match_suitable_bikes(bikes_dictionary):
 
             bikes_dictionary[j]['num_bikes_available'] \
                 = (len(bikes_dictionary[j]['possible_matches']))
-
-    print("MATCHES SLEEP")
-    pprint(bikes_dictionary)
-    # time.sleep(5)
 
     check_availability(bikes_dictionary)
     book_bikes(bikes_dictionary)
@@ -374,7 +379,7 @@ def book_bikes(bikes_dictionary):
 
             # if the possible matches list = 1, then there is only 1 choice
             # so select that, call up book_bikes_to_calendar,
-            # and remove it from other bike dictionaries 'possible matches' list
+            # and remove it from other bike dictionaries 'possible matches'
             elif len(bikes_dictionary[j]['possible_matches']) == 1:
 
                 # assign chosen_bike_index to this solo bike index
@@ -392,6 +397,7 @@ def book_bikes(bikes_dictionary):
                 bikes_dictionary[j]['dates_of_hire'] = hire_dates_requested
                 unavailable_bikes.append(choose_bike_index)
                 booked_bikes.append(bikes_dictionary[j])
+                print(f"Bike index {choose_bike_index} booked!")
 
                 if bikes_dictionary[j] in not_booked_bikes:
                     not_booked_bikes.remove(bikes_dictionary[j])
@@ -419,6 +425,7 @@ def book_bikes(bikes_dictionary):
                 bikes_dictionary[j]['dates_of_hire'] = hire_dates_requested
                 unavailable_bikes.append(choose_bike_index)
                 booked_bikes.append(bikes_dictionary[j])
+                print(f"Bike index {choose_bike_index} booked!")
 
                 if bikes_dictionary[j] in not_booked_bikes:
                     not_booked_bikes.remove(bikes_dictionary[j])
@@ -451,9 +458,12 @@ def find_alternatives(bikes_dictionary):
 
             # list of all available bike types
             # keep inside j loop to restart from full list each time
-            alt_bikes = ['Full suspension', 'Full suspension carbon',
-            'Full suspension carbon e-bike', 'Full suspension e-bike',
-            'Hardtail', 'Hardtail e-bike']
+            alt_bikes = ['Full suspension',
+                         'Full suspension carbon',
+                         'Full suspension carbon e-bike',
+                         'Full suspension e-bike',
+                         'Hardtail',
+                         'Hardtail e-bike']
 
             # remove current bike type from alt_bikes so
             # function does not randomly choose the same bike type
@@ -475,9 +485,6 @@ def booked_or_not(bikes_dictionary):
     If there are non-booked bikes and user is happy with alternative
     call up find_alternatives
     """
-    print("BOOKED OR NOT SLEEP")
-    print(bikes_dictionary)
-    time.sleep(5)
 
     still_looking = ["ITERATION"]
 
@@ -503,11 +510,9 @@ def booked_or_not(bikes_dictionary):
 
         # only allow max 4 iterations
         if len(still_looking) > 4:
-            print("Max interations")
-            print(booked_bikes)
-            raise SystemExit
-        # print("STILL LOOKING")
-        # print(len(still_looking))
+            this_error = "MAX ITERATIONS EXCEEDED"
+            error_func(this_error)
+            
         find_alternatives(bikes_dictionary)
 
     else:
@@ -516,47 +521,57 @@ def booked_or_not(bikes_dictionary):
         print("User does not want alternatives")
 
 
+def booking_details():
+    """
+    This function organises the text to be sent
+    in an email to user and owner to confirm booking
+    """
+
+    global user_email_subject
+    user_email_subject = ""
+
+    if len(hire_dates_requested) > 1:
+        user_email_subject = {hire_dates_requested[0]} - {hire_dates_requested[-1]}
+    else:
+        user_email_subject = {hire_dates_requested[0]}
+
+
 def calculate_cost():
     """
     This functions calculates the total cost of
     bike hire
     """
-    bike_costs = []
 
     # for all bikes in booked list
     for i in range(len(booked_bikes)):
 
-        # multiple price per day * number of hire days
+        # multiply price per day * number of hire days
         bike_costs.append(int(booked_bikes[i]['price_per_day']) * len(hire_dates_requested))
 
-    total_cost = sum(bike_costs)  
-    print(total_cost)
-    print(bike_costs)
-
+    total_cost = sum(bike_costs)
     bike_user_details()
 
 
 def bike_user_details():
     """
-    Now we know details of the booked bikes, 
+    Now we know details of the booked bikes,
     collect last information about chosen bikes
     """
 
     # iterate through list of bikes dictionaries
     for i in range(len(booked_bikes)):
-        #print(f"i = {i}")
 
         # iterate through gs_bikes_list
         for j in range(len(bikes_list)):
-            #print(f"j = {j}")
 
-            #print(bikes_list[0][j])
             # if the booked bike index in the gs_bikes_list is same as that of
             # the dictionary, index the relevant brand and descr
             # and append to the dictionary
             if (bikes_list[j][0]) == booked_bikes[i]['booked_bike']:
                 booked_bikes[i]['booked_bike_brand'] = bikes_list[j][1]
                 booked_bikes[i]['booked_bike_desc'] = bikes_list[j][2]
+
+    booking_details()
 
 
 def check_double_bookings():
@@ -580,7 +595,8 @@ def check_double_bookings():
 
     # check that these two numbers match
     if num_dates_booked != num_dates_calendar:
-        print("DOUBLE BOOKED")
+        this_error = "DOUBLE BOOKED"
+        error_func(this_error)
         # send email to owner
     else:
         print("YAY IT MATCHES")
@@ -599,63 +615,76 @@ def check_double_bookings():
             if calendar[i].count(calendar[i][j]) > 1 and calendar[i][j] != "":
 
                 # raise an error
-                print("PROBLEM")
+                this_error = "DOUBLE BOOKED"
+                error_func(this_error)
 
     calculate_cost()
 
 
-# def booking_details():
-#     """
-#     This function organises the text to be sent
-#     in an email to user and owner to confirm booking
-#     """
-
-#     user_email_subject = ""
-#     user_email_welcome = ""
-#     email_booking_details = ""
-#     email_booked_bikes = ""
-
-#     if len(hire_dates_requested) > 1:
-#         user_email_subject = (f"Bike hire {hire_dates_requested[0]} - {hire_dates_requested[-1]}")
-#     else:
-#         user_email_subject = (f"Bike hire {hire_dates_requested[0]}")
-
-#     user_email_welcome = f"Hello {responses_list[-1][1].split(' ', 1)[0]}. Thank you for booking with us. Below are your booking details:"
-
-#     email_booking_details = f"Booking name:  {responses_list[-1]} '\n'    Dates of hire:  {hire_dates_requested}  '\n' Number of bikes: {len(booked_bikes)}"
-
-#     email_booked_bikes = (f"")
-
 get_latest_response()
 
-pprint(booked_bikes)
+
+print(bike_costs)
 
 
+# pprint(booked_bikes)
 
-
-
-## MESSAGE TO USER
+# MESSAGE TO USER
 message = f"""\
-Subject: Hi Mailtrap
+Subject: Bike hire booking confirmed {user_email_subject}
 To: {receiver}
 From: {sender}
 
-Hello {responses_list[-1][1]}!
+Hello {responses_list[-1][1].split(' ', 1)[0]}!
 
 Thank you for booking with us.  Below are your booking details:
 
+Booking name: {responses_list[-1][1]}
+Booking date(s): {user_email_subject}
+Number of bikes: {len(booked_bikes)}
+
+Bike 1:
+Brand:          {booked_bikes[0]['booked_bike_brand']}
+Description:    {booked_bikes[0]['booked_bike_desc']}
+Type:           {booked_bikes[0]['bike_type']}
+Rider height:   {booked_bikes[0]['user_height']}
+Bike size:      {booked_bikes[0]['bike_size']}
+Price per day:  {booked_bikes[0]['price_per_day']}
+Total price for {len(hire_dates_requested)} days = {bike_costs[0]}
+
+Bike 2:
+Brand:          {booked_bikes[1]['booked_bike_brand']}
+Description:    {booked_bikes[1]['booked_bike_desc']}
+Type:           {booked_bikes[1]['bike_type']}
+Rider height:   {booked_bikes[1]['user_height']}
+Bike size:      {booked_bikes[1]['bike_size']}
+Price per day:  {booked_bikes[1]['price_per_day']}
+Total price for {len(hire_dates_requested)} days = {bike_costs[1]}
+
+Total amount payable: {total_cost}
+
+Important Information:
+Time out:  9am on first day of hire
+Time due back:  4.45pm on last day of hire
+
+Terms of Hire:
 
 
+Payment:
+
+Want to amend your booking?
+Please call or email
 
 """
 
 try:
-    #send your message with credentials specified above
+    # send your message with credentials specified above
     with smtplib.SMTP(smtp_server, port) as server:
         server.login(login, password)
         server.sendmail(sender, receiver, message)
 
-    # tell the script to report if your message was sent or which errors need to be fixed
+    # tell the script to report if your message was sent or which errors
+    # need to be fixed
     print('Sent')
 except (gaierror, ConnectionRefusedError):
     print('Failed to connect to the server. Bad connection settings?')
@@ -668,7 +697,7 @@ except smtplib.SMTPException as e:
 
 
 
-## MESSAGE TO OWNER
+# MESSAGE TO OWNER
 message = f"""\
 Subject: Booking confirmed
 To: {sender}
@@ -683,12 +712,13 @@ Booking number {booking_number} confirmed.
 """
 
 try:
-    #send your message with credentials specified above
+    # send your message with credentials specified above
     with smtplib.SMTP(smtp_server, port) as server:
         server.login(login, password)
         server.sendmail(sender, receiver, message)
 
-    # tell the script to report if your message was sent or which errors need to be fixed
+    # tell the script to report if your message was sent or which
+    # errors need to be fixed
     print('Sent')
 except (gaierror, ConnectionRefusedError):
     print('Failed to connect to the server. Bad connection settings?')
@@ -700,13 +730,13 @@ except smtplib.SMTPException as e:
 
 
 
-# #pprint(booked_bikes)
+# pprint(booked_bikes)
 
 # ### USER EMAIL
 
 # # Hello {name}
 
-# # Thanks for looking to us for hiring bikes. 
+# # Thanks for looking to us for hiring bikes.
 
 # # We've managed to book the following bikes for you:
 
@@ -716,11 +746,14 @@ except smtplib.SMTPException as e:
 # # We could not find any bikes suitable for:
 
 
-# # These have now been booked into the calendar.  Please let us know if you need this booking amended.
+# # These have now been booked into the calendar.  
+# Please let us know if you need this booking amended.
 
-# # The price for this hire is displayed below.  You can call up on XXXXX to pay, or bring cash/card on the first date of hire:
+# # The price for this hire is displayed below.  You can call up on XXXXX to
+#  pay, or bring cash/card on the first date of hire:
 
-# # For more information on what you may need to bring for hire, please see XXXXX on the website. 
+# # For more information on what you may need to bring for hire, please see
+#  XXXXX on the website.
 
 # # See you promptly on {date}
 
