@@ -55,7 +55,7 @@ hire_dates_requested = []
 dates_filled_in_previous = sort_data[1][1]
 sender = "bike_shop_owner@gmail.com"
 receiver = responses_list[-1][3]
-owner = "bike_shop_owner@gmail.com"
+
 
 def error_func(this_error):
     """
@@ -96,7 +96,7 @@ def get_latest_response():
                          (last_response[16])]
 
     global booking_number
-    booking_number = sort_data[-1][2]
+    booking_number = len(responses_list)-1
     print(booking_number)
 
     # max bikes hired = 5, but remove empty values from list
@@ -301,8 +301,7 @@ def check_availability(bikes_dictionary):
                 (bikes_dictionary[j]['possible_matches']).\
                     remove(unavailable_bikes[k])
 
-    pprint(bikes_dictionary)
-
+    # pprint(bikes_dictionary)
 
 
 def book_bikes_to_calendar(choose_bike_index):
@@ -354,9 +353,10 @@ def book_bikes_to_calendar(choose_bike_index):
                         calendar2[x][z] == "":
 
                     # and write the booking number into that cell
-                    update_calendar2.update_cell(x+1,
-                                                 z+1,
-                                                 bikes_dictionary[0]['booking_number'])
+                    update_calendar2.\
+                        update_cell(x+1,
+                                    z+1,
+                                    bikes_dictionary[0]['booking_number'])
 
 
 def book_bikes(bikes_dictionary):
@@ -370,9 +370,6 @@ def book_bikes(bikes_dictionary):
 
     # for each bike dictionary
     for j in range(len(bikes_dictionary)):
-
-        # print(f"Length of booked bikes {len(booked_bikes)}")
-        # print(f"j = {j}")
 
         if bikes_dictionary[j]['status'] != "Booked":
 
@@ -417,7 +414,8 @@ def book_bikes(bikes_dictionary):
             else:
 
                 # randomly select one of the possible matches
-                choose_bike_index = random.choice(bikes_dictionary[j]['possible_matches'])
+                choose_bike_index = \
+                    random.choice(bikes_dictionary[j]['possible_matches'])
 
                 # run function with this bike index
                 book_bikes_to_calendar(choose_bike_index)
@@ -438,7 +436,6 @@ def book_bikes(bikes_dictionary):
 
                 # re-run check_availability to remove this bike index from
                 # other bike dicts
-                # print(f"Re-checking availability")
                 check_availability(bikes_dictionary)
 
         continue
@@ -500,10 +497,11 @@ def booked_or_not(bikes_dictionary):
         # if the status does not equal Booked, they are
         # NOT booked, so append them to not_booked_bikes list
         if bikes_dictionary[j]['status'] != "Booked":
-            bikes_dictionary[j]['comments'] = "Found alternative"
             not_booked_bikes.append(bikes_dictionary[j])
 
-        if bikes_dictionary[j]['status'] == "Booked" and bikes_dictionary[j] in not_booked_bikes :
+        if bikes_dictionary[j]['status'] == "Booked"\
+                and bikes_dictionary[j] in not_booked_bikes:
+
             not_booked_bikes.remove(bikes_dictionary[j])
 
     if len(booked_bikes) == num_req_bikes:
@@ -521,24 +519,121 @@ def booked_or_not(bikes_dictionary):
         if len(still_looking) > 4:
             this_error = "MAX ITERATIONS EXCEEDED"
             error_func(this_error)
-            
+
         find_alternatives(bikes_dictionary)
 
+    # if the user does not want us to look for alternatives
     else:
         print(f"Bikes found:  {len(booked_bikes)}")
         print(f"Bikes not found:  {len(not_booked_bikes)}")
         print("User does not want alternatives")
+
+        # if no bikes have been booked at this point
+        # send email to tell user
+        if len(booked_bikes) == 0:
+            no_bikes_email()
+
+        # but if some have been booked
         check_double_bookings()
 
+
+def no_bikes_email():
+    """
+    This functions sends an email to both the user
+    and the shop owner if no bikes have been booked
+    """
+
+    message = f"""\
+    Subject: Bike hire enquiry
+    To: {receiver}
+    From: {sender}
+
+    Hello {responses_list[-1][1].split(' ', 1)[0]}!
+
+    We're sorry to say we could not find any suitable bikes for hire
+    for the dates you requested.  
+
+    Feel free to give us a call on 08796 236458 if you can be flexible
+    with booking requirements and would like to continue with a booking.
+
+    Regards
+    Bike Shop
+    """
 
 def send_email():
     """
     This function sends an email to both the user and
-    the shop owner
-    Depends on booking situation
+    the shop owner when bikes have been booked
     """
 
-   
+    message = f"""\
+    Subject: Bike hire booking confirmed {user_email_subject}
+    To: {receiver}
+    From: {sender}
+
+    Hello {responses_list[-1][1].split(' ', 1)[0]}!
+
+    Thank you for booking with us.  Below are your booking details:
+
+    Booking name:               {responses_list[-1][1]}
+    Booking contact number:     {responses_list[-1][2]}
+    Dates of hire:              {user_email_subject}
+    Number of bikes booked:     {len(booked_bikes)}
+
+    Booked bikes:
+    {email_booked_bike}
+
+    Bikes we could not book:
+    {email_not_booked_bike}
+
+    Important Information:
+    Time out:  9am on first day of hire
+    Time due back:  4.45pm on last day of hire
+
+    Terms of Hire:
+    You may cancel your booking any time up until 24 hrs before the firs date of hire.
+    The total payable amount must be paid before you turn up,
+    or on the first date of hire.
+    Please read the safety brief provided on the website.
+    If you are due to be late back, please let the shop owner know.  
+    There may be additional charges for returning after the time due back.
+
+    Payment:
+    You can pay by phone on 08796 236458, or pay on the first day of hire by card or cash.
+    The total amount payable for this booking is: {total_cost} GBP
+
+    Want to amend your booking?
+    Please call 08796 236458 or email info@bike_shop.com
+
+    See you soon!
+    Regards
+    Bike Shop
+    """
+
+    
+
+    # message to bike shop owner
+    message = f"""\
+    Subject: Bike hire booking confirmed {user_email_subject}
+    To: {sender}
+    From: {sender}
+
+    The following bikes have been booked for {user_email_subject}:
+
+    Booking name:               {responses_list[-1][1]}
+    Booking contact number:     {responses_list[-1][2]}
+    Dates of hire:              {user_email_subject}
+    Number of bikes booked:     {len(booked_bikes)}
+    Total cost:                 {total_cost}
+
+    Booked bikes:
+    {email_booked_bike}
+
+    Bikes we could not book:
+    {email_not_booked_bike}
+
+    End of email
+    """
 
 
 def booking_details():
@@ -552,7 +647,8 @@ def booking_details():
 
     # create string for hire dates
     if len(hire_dates_requested) > 1:
-        user_email_subject = f"{hire_dates_requested[0]} - {hire_dates_requested[-1]}"
+        user_email_subject = \
+            f"{hire_dates_requested[0]} - {hire_dates_requested[-1]}"
     else:
         user_email_subject = {hire_dates_requested[0]}
 
@@ -567,7 +663,7 @@ def booking_details():
     # for all booked bikes
     for i in range(len(booked_bikes)):
 
-        # layout string of relevant details to be 
+        # layout string of relevant details to be
         # added to email
         bike_throwaway = f"Bike {i+1}\n" \
                   f"Brand:          {booked_bikes[i]['booked_bike_brand']}\n" \
@@ -584,7 +680,7 @@ def booking_details():
     # for all not booked bikes
     for i in range(len(not_booked_bikes)):
 
-        # layout string of relevant details to be 
+        # layout string of relevant details to be
         # added to email
         bike_throwaway = f"Type:           {not_booked_bikes[i]['bike_type']}\n" \
                 f"Rider height:   {not_booked_bikes[i]['user_height']}\n" \
@@ -592,14 +688,10 @@ def booking_details():
 
         email_not_booked_bike += bike_throwaway
 
-    # 
     if len(booked_bikes) == 0:
         email_booked_bike = "None"
     if len(not_booked_bikes) == 0:
         email_not_booked_bike = "None"
-
-    print(email_booked_bike)
-    print(email_not_booked_bike)
 
     send_email()
 
@@ -697,160 +789,18 @@ get_latest_response()
 pprint(booked_bikes)
 pprint(not_booked_bikes)
 
-
-# type your message: use two newlines (\n) to separate the subject from the message body, and use 'f' to  automatically insert variables in the text
-message = f"""\
-Subject: Bike hire booking confirmed {user_email_subject}
-To: {receiver}
-From: {sender}
-
-Hello {responses_list[-1][1].split(' ', 1)[0]}!
-
-Thank you for booking with us.  Below are your booking details:
-
-Booking name:               {responses_list[-1][1]}
-Booking contact number:     {responses_list[-1][2]}
-Dates of hire:              {user_email_subject}
-Number of bikes booked:     {len(booked_bikes)}
-
-Booked bikes:
-{email_booked_bike}
-
-Bikes we could not book:
-{email_not_booked_bike}
-
-Important Information:
-Time out:  9am on first day of hire
-Time due back:  4.45pm on last day of hire
-
-Terms of Hire:
-You may cancel your booking any time up until 24 hrs before the firs date of hire.
-The total payable amount must be paid before you turn up, or on the first date of hire.
-Please read the safety brief provided on the website.
-If you are due to be late back, please let the shop owner know.  There may be additional charges for returning after the time due back.
-
-Payment:
-You can pay by phone on 08796 236458, or pay on the first day of hire by card or cash.
-The total amount payable for this booking is: {total_cost} GBP
-
-Want to amend your booking?
-Please call 08796 236458 or email info@bike_shop.com
-
-See you soon!
-Regards
-Bike Shop
-"""
-
 try:
-    #send your message with credentials specified above
-    with smtplib.SMTP(smtp_server, port) as server:
-        server.login(login, password)
-        server.sendmail(sender, receiver, message)
+        # send your message with credentials specified above
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.login(login, password)
+            server.sendmail(sender, receiver, message)
 
-    # tell the script to report if your message was sent or which errors need to be fixed
-    print('Sent')
-except (gaierror, ConnectionRefusedError):
-    print('Failed to connect to the server. Bad connection settings?')
-except smtplib.SMTPServerDisconnected:
-    print('Failed to connect to the server. Wrong user/password?')
-except smtplib.SMTPException as e:
-    print('SMTP error occurred: ' + str(e))
-
-# # message to user
-# message = f"""\
-# Subject: Bike hire booking confirmed {user_email_subject}
-# To: {receiver}
-# From: {sender}
-
-# Hello {responses_list[-1][1].split(' ', 1)[0]}!
-
-# Thank you for booking with us.  Below are your booking details:
-
-# Booking name:               {responses_list[-1][1]}
-# Booking contact number:     {responses_list[-1][2]}
-# Dates of hire:              {user_email_subject}
-# Number of bikes booked:     {len(booked_bikes)}
-
-# Booked bikes:
-# {email_booked_bike}
-
-# Bikes we could not book:
-# {email_not_booked_bike}
-
-# Important Information:
-# Time out:  9am on first day of hire
-# Time due back:  4.45pm on last day of hire
-
-# Terms of Hire:
-# You may cancel your booking any time up until 24 hrs before the firs date of hire.
-# The total payable amount must be paid before you turn up, or on the first date of hire.
-# Please read the safety brief provided on the website.
-# If you are due to be late back, please let the shop owner know.  There may be additional charges for returning after the time due back.
-
-# Payment:
-# You can pay by phone on 08796 236458, or pay on the first day of hire by card or cash.
-# The total amount payable for this booking is: £{total_cost}
-
-# Want to amend your booking?
-# Please call 08796 236458 or email info@bike_shop.com
-
-# See you soon!
-# Regards
-# Bike Shop
-
-# """
-
-# try:
-#     # send your message with credentials specified above
-#     with smtplib.SMTP(smtp_server, port) as server:
-#         server.login(login, password)
-#         server.sendmail(sender, receiver, message)
-
-#     # tell the script to report if your message was sent or which errors need to be fixed
-#     print('Sent')
-# except (gaierror, ConnectionRefusedError):
-#     print('Failed to connect to the server. Bad connection settings?')
-# except smtplib.SMTPServerDisconnected:
-#     print('Failed to connect to the server. Wrong user/password?')
-# except smtplib.SMTPException as e:
-#     print('SMTP error occurred: ' + str(e))
-
-# # message to bike shop owner
-# message = f"""\
-# Subject: Bike hire booking confirmed {user_email_subject}
-# To: {sender}
-# From: {sender}
-
-# The following bikes have been booked for {user_email_subject} for 
-
-# Booking name:               {responses_list[-1][1]}
-# Booking contact number:     {responses_list[-1][2]}
-# Dates of hire:              {user_email_subject}  
-# Number of bikes booked:     {len(booked_bikes)}
-# Total cost:                 {total_cost}
-
-# Booked bikes:
-# {email_booked_bike}
-
-# Bikes we could not book:
-# {email_not_booked_bike}
-
-# End of email
-
-# """
-
-# try:
-#     # send your message with credentials specified above
-#     with smtplib.SMTP(smtp_server, port) as server:
-#         server.login(login, password)
-#         server.sendmail(sender, receiver, message)
-
-#     # tell the script to report if your message was sent or which errors
-#     # need to be fixed
-#     print('Sent')
-# except (gaierror, ConnectionRefusedError):
-#     print('Failed to connect to the server. Bad connection settings?')
-# except smtplib.SMTPServerDisconnected:
-#     print('Failed to connect to the server. Wrong user/password?')
-# except smtplib.SMTPException as e:
-#     print('SMTP error occurred: ' + str(e))
+        # tell the script to report if your message was sent
+        # or which errors need to be fixed
+        print('Sent')
+    except (gaierror, ConnectionRefusedError):
+        print('Failed to connect to the server. Bad connection settings?')
+    except smtplib.SMTPServerDisconnected:
+        print('Failed to connect to the server. Wrong user/password?')
+    except smtplib.SMTPException as e:
+        print('SMTP error occurred: ' + str(e))
