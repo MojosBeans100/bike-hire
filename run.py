@@ -10,7 +10,7 @@ from socket import gaierror
 import gspread
 import random
 import copy
-# import time
+import time
 import smtplib
 # import csv, smtplib
 
@@ -40,12 +40,15 @@ bikes_list2 = SHEET.worksheet('bike_list')
 responses_list = SHEET.worksheet('form_responses').get_all_values()
 sort_data = SHEET.worksheet('sort_data').get_all_values()
 calendar = SHEET.worksheet('calendar').get_all_values()
+bookings_list = SHEET.worksheet('bookings')
 calendar2 = SHEET.worksheet('calendar2').get_all_values()
 update_calendar2 = SHEET.worksheet('calendar2')
 update_calendar = SHEET.worksheet('calendar')
 gs_size_guide = SHEET.worksheet('size_guide').get_all_values()
 
+# Global Variables
 booked_bikes = []
+booked_bikes_list = []
 not_booked_bikes = []
 bikes_dictionary = []
 unavailable_bikes = []
@@ -55,6 +58,7 @@ hire_dates_requested = []
 dates_filled_in_previous = sort_data[1][1]
 sender = "bike_shop_owner@gmail.com"
 receiver = responses_list[-1][3]
+iterations = []
 
 
 def error_func(this_error):
@@ -125,6 +129,7 @@ def get_latest_response():
     global num_req_bikes
     num_req_bikes = len(bikes_dictionary)
 
+    print("Found latest response..")
     booking_number_occured(bikes_dictionary)
 
 
@@ -150,6 +155,7 @@ def booking_number_occured(bikes_dictionary):
                     print("This booking has already been completed")
                     raise SystemExit
 
+    print("Unique booking number:- continue..")
     match_size(bikes_dictionary)
 
 
@@ -170,6 +176,7 @@ def match_size(bikes_dictionary):
             if (gs_size_guide[j][4]) == bikes_dictionary[i]['user_height']:
                 bikes_dictionary[i]['bike_size'] = gs_size_guide[j][8]
 
+    print("Bike sizes matched..")
     match_price(bikes_dictionary)
 
 
@@ -191,6 +198,7 @@ def match_price(bikes_dictionary):
             if (bikes_list[j][4]) == bikes_dictionary[i]['bike_type']:
                 bikes_dictionary[i]['price_per_day'] = bikes_list[j][5]
 
+    print("Bike prices matched..")
     find_unavailable_bikes()
 
 
@@ -236,7 +244,7 @@ def find_unavailable_bikes():
 
     # also look for blanket unavailability in bikes list
     # only do this ONCE
-    if len(booked_bikes) == 0:
+    if len(iterations) == 0:
 
         # for each bike in bikes list
         for q in range(len(bikes_list)):
@@ -245,6 +253,8 @@ def find_unavailable_bikes():
             if bikes_list[q][6] == "No":
                 unavailable_bikes.append(bikes_list[q][0])
 
+    print(f"Unavailable bikes:- {unavailable_bikes}")
+    time.sleep(3)
     match_suitable_bikes(bikes_dictionary)
 
 
@@ -301,7 +311,7 @@ def check_availability(bikes_dictionary):
                 (bikes_dictionary[j]['possible_matches']).\
                     remove(unavailable_bikes[k])
 
-    # pprint(bikes_dictionary)
+    print("Checking availability..")
 
 
 def book_bikes_to_calendar(choose_bike_index):
@@ -358,6 +368,9 @@ def book_bikes_to_calendar(choose_bike_index):
                                     z+1,
                                     bikes_dictionary[0]['booking_number'])
 
+    print(f"Bike index:-  {choose_bike_index}  booked to calendar for {hire_dates_requested}")
+    time.sleep(3)
+
 
 def book_bikes(bikes_dictionary):
     """
@@ -400,7 +413,9 @@ def book_bikes(bikes_dictionary):
                 bikes_dictionary[j]['dates_of_hire'] = hire_dates_requested
                 unavailable_bikes.append(choose_bike_index)
                 booked_bikes.append(bikes_dictionary[j])
+                booked_bikes_list.append(choose_bike_index)
                 print(f"Bike index {choose_bike_index} booked!")
+                time.sleep(3)
 
                 if bikes_dictionary[j] in not_booked_bikes:
                     not_booked_bikes.remove(bikes_dictionary[j])
@@ -428,8 +443,10 @@ def book_bikes(bikes_dictionary):
                 bikes_dictionary[j]['booked_bike'] = choose_bike_index
                 bikes_dictionary[j]['dates_of_hire'] = hire_dates_requested
                 unavailable_bikes.append(choose_bike_index)
+                booked_bikes_list.append(choose_bike_index)
                 booked_bikes.append(bikes_dictionary[j])
                 print(f"Bike index {choose_bike_index} booked!")
+                time.sleep(3)
 
                 if bikes_dictionary[j] in not_booked_bikes:
                     not_booked_bikes.remove(bikes_dictionary[j])
@@ -479,7 +496,26 @@ def find_alternatives(bikes_dictionary):
         # return to relevant function to perform again
         # only need to re-match the price, not the size as we know
         # the size is the same
+
+        print(f"Finding alternatives for {not_booked_bikes}")
+        time.sleep(3)
+
         match_price(bikes_dictionary)
+
+
+def add_booking_to_gs():
+
+    last_row = bookings_list[-1].row
+    print(last_row)
+
+    # bookings_list[-1][0].update_cell(booking_number)
+    # bookings_list[-1][1].update(hire_dates_requested)
+    # bookings_list[-1][2].update(len(booked_bikes))
+    # bookings_list[-1][3].update(responses_list[-1][1])
+    # bookings_list[-1][4].update(responses_list[-1][2])
+    # bookings_list[-1][5].update(booked_bikes_list)
+    # bookings_list[-1][6].datetime.datetime.now()
+        
 
 
 def booked_or_not(bikes_dictionary):
@@ -488,15 +524,15 @@ def booked_or_not(bikes_dictionary):
     If there are non-booked bikes and user is happy with alternative
     call up find_alternatives
     """
-
-    still_looking = ["ITERATION"]
+    print(f"Number of iterations = {len(iterations)+1}")
+    time.sleep(5)
 
     # for all bikes dictionaries
     for j in range(len(bikes_dictionary)):
 
         # if the status does not equal Booked, they are
         # NOT booked, so append them to not_booked_bikes list
-        if bikes_dictionary[j]['status'] != "Booked":
+        if bikes_dictionary[j]['status'] != "Booked" and bikes_dictionary[j] not in not_booked_bikes:
             not_booked_bikes.append(bikes_dictionary[j])
 
         if bikes_dictionary[j]['status'] == "Booked"\
@@ -505,7 +541,7 @@ def booked_or_not(bikes_dictionary):
             not_booked_bikes.remove(bikes_dictionary[j])
 
     if len(booked_bikes) == num_req_bikes:
-        print("ALL BIKES FOUND")
+        print("All bikes found.. sending confirmation emails")
         check_double_bookings()
 
     # if not all bikes have been booked
@@ -513,10 +549,10 @@ def booked_or_not(bikes_dictionary):
     # to perform the iteration again for only these bikes
     elif responses_list[-1][17] == "Yes":
         bikes_dictionary = copy.copy(not_booked_bikes)
-        still_looking.append("ITERATION")
+        iterations.append("ITERATION")
 
         # only allow max 4 iterations
-        if len(still_looking) > 4:
+        if len(iterations) > 4:
             this_error = "MAX ITERATIONS EXCEEDED"
             error_func(this_error)
 
@@ -559,6 +595,22 @@ def no_bikes_email():
     Regards
     Bike Shop
     """
+
+    try:
+        # send your message with credentials specified above
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.login(login, password)
+            server.sendmail(sender, receiver, message)
+
+        # tell the script to report if your message was sent
+        # or which errors need to be fixed
+        print('Sent')
+    except (gaierror, ConnectionRefusedError):
+        print('Failed to connect to the server. Bad connection settings?')
+    except smtplib.SMTPServerDisconnected:
+        print('Failed to connect to the server. Wrong user/password?')
+    except smtplib.SMTPException as e:
+        print('SMTP error occurred: ' + str(e))
 
 def send_email():
     """
@@ -610,8 +662,6 @@ def send_email():
     Bike Shop
     """
 
-    
-
     # message to bike shop owner
     message = f"""\
     Subject: Bike hire booking confirmed {user_email_subject}
@@ -634,6 +684,22 @@ def send_email():
 
     End of email
     """
+
+    try:
+        # send your message with credentials specified above
+        with smtplib.SMTP(smtp_server, port) as server:
+            server.login(login, password)
+            server.sendmail(sender, receiver, message)
+
+        # tell the script to report if your message was sent
+        # or which errors need to be fixed
+        print('Sent')
+    except (gaierror, ConnectionRefusedError):
+        print('Failed to connect to the server. Bad connection settings?')
+    except smtplib.SMTPServerDisconnected:
+        print('Failed to connect to the server. Wrong user/password?')
+    except smtplib.SMTPException as e:
+        print('SMTP error occurred: ' + str(e))
 
 
 def booking_details():
@@ -693,6 +759,7 @@ def booking_details():
     if len(not_booked_bikes) == 0:
         email_not_booked_bike = "None"
 
+    add_booking_to_gs()
     send_email()
 
 
@@ -786,21 +853,7 @@ get_latest_response()
 
 
 # check all outputs here
+print("BOOKED BIKES:")
 pprint(booked_bikes)
+print("NOT BOOKED BIKES:")
 pprint(not_booked_bikes)
-
-try:
-        # send your message with credentials specified above
-        with smtplib.SMTP(smtp_server, port) as server:
-            server.login(login, password)
-            server.sendmail(sender, receiver, message)
-
-        # tell the script to report if your message was sent
-        # or which errors need to be fixed
-        print('Sent')
-    except (gaierror, ConnectionRefusedError):
-        print('Failed to connect to the server. Bad connection settings?')
-    except smtplib.SMTPServerDisconnected:
-        print('Failed to connect to the server. Wrong user/password?')
-    except smtplib.SMTPException as e:
-        print('SMTP error occurred: ' + str(e))
